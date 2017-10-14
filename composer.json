@@ -1,8 +1,45 @@
 {
     "name": "davamigo/php-event-sourcing",
     "description": "Framework agnostic PHP library for event sourcing programming",
+    "type": "library",
+    "keywords": [
+        "event sourcing",
+        "command bus",
+        "event bus",
+        "cqrs",
+        "ddd",
+        "php"
+    ],
+    "homepage": "https://github.com/davamigo/php-event-sourcing",
+    "license": "MIT",
+    "authors": [{
+        "name": "David Amigo",
+        "email": "davamigo@gmail.com",
+        "homepage": "https://github.com/davamigo",
+        "role": "lead"
+    }],
+    "support": {
+        "email": "davamigo@gmail.com",
+        "source": "https://github.com/davamigo/php-event-sourcing"
+    },
     "require": {
-        "php": "~7.0"
+        "php": "~7.0",
+        "ramsey/uuid": "^3.7"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Davamigo\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\": "tests/"
+        }
+    },
+    "config": {
+        "bin-dir": "bin/"
     }
 }
-
