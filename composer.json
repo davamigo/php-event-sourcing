@@ -1,0 +1,8 @@
+{
+    "name": "davamigo/php-event-sourcing",
+    "description": "Framework agnostic PHP library for event sourcing programming",
+    "require": {
+        "php": "~7.0"
+    }
+}
+

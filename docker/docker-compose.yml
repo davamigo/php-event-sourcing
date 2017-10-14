@@ -1,0 +1,16 @@
+version: '2'
+services:
+
+    # See: docker/Dockerfile
+    php7.1:
+        build: .
+
+        restart: always
+
+        container_name: docker_php7.1
+
+        volumes:
+            - "../.:/var/www/html"
+
+        network_mode: bridge
+
