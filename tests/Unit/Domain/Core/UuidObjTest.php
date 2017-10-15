@@ -11,14 +11,14 @@ use PHPUnit\Framework\TestCase;
  * @package Test\Unit\Domain\Core
  * @author davamigo@gmail.com
  *
- * @group Test_Unit_Domain_Core_Uuid
+ * @group Test_Unit_Domain_Core_UuidObj
  * @group Test_Unit_Domain_Core
  * @group Test_Unit_Domain
  * @group Test_Unit
  * @group Test
  * @test
  */
-class UuidTest extends TestCase
+class UuidObjTest extends TestCase
 {
     /**
      * Test that two consecutive calls do not create the same Uuid

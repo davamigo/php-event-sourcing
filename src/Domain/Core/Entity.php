@@ -3,7 +3,7 @@
 namespace Davamigo\Domain\Core;
 
 /**
- * Interface Entity
+ * Interface for an entity - Every entity has an uuid.
  *
  * @package Davamigo\Domain\Core
  * @author davamigo@gmail.com
@@ -15,5 +15,5 @@ interface Entity extends Serializable
      *
      * @return Uuid
      */
-    public function getUuid() : Uuid;
+    public function uuid() : Uuid;
 }
