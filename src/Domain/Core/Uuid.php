@@ -1,11 +1,11 @@
 <?php
 
-namespace Davamigo\domain\core;
+namespace Davamigo\Domain\Core;
 
 /**
  * Interface for an Uuid (Universal User Id)
  *
- * @package Davamigo\domain\core
+ * @package Davamigo\Domain\Core
  * @author davamigo@gmail.com
  */
 interface Uuid

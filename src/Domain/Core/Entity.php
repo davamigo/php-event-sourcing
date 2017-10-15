@@ -1,11 +1,11 @@
 <?php
 
-namespace Davamigo\domain\core;
+namespace Davamigo\Domain\Core;
 
 /**
  * Interface Entity
  *
- * @package Davamigo\domain\core
+ * @package Davamigo\Domain\Core
  * @author davamigo@gmail.com
  */
 interface Entity extends Serializable

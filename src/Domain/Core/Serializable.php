@@ -1,11 +1,11 @@
 <?php
 
-namespace Davamigo\domain\core;
+namespace Davamigo\Domain\Core;
 
 /**
  * Interface Serializable
  *
- * @package Davamigo\domain\core
+ * @package Davamigo\Domain\Core
  * @author davamigo@gmail.com
  */
 interface Serializable

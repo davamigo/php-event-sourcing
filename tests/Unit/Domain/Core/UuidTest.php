@@ -1,15 +1,22 @@
 <?php
 
-namespace Test\unit\domain\core;
+namespace Test\Unit\Domain\Core;
 
-use Davamigo\domain\core\UuidObj;
+use Davamigo\Domain\Core\UuidObj;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Test of class Davamigo\domain\core\UuidObj
+ * Test of class Davamigo\Domain\Core\UuidObj
  *
- * @package Test\unit\domain\core
+ * @package Test\Unit\Domain\Core
  * @author davamigo@gmail.com
+ *
+ * @group Test_Unit_Domain_Core_Uuid
+ * @group Test_Unit_Domain_Core
+ * @group Test_Unit_Domain
+ * @group Test_Unit
+ * @group Test
+ * @test
  */
 class UuidTest extends TestCase
 {

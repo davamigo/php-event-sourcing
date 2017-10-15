@@ -1,6 +1,6 @@
 <?php
 
-namespace Davamigo\domain\core;
+namespace Davamigo\Domain\Core;
 
 use Ramsey\Uuid\Uuid as RamseyUuid;
 use Ramsey\Uuid\UuidInterface as RamseyUuidInterface;
@@ -8,7 +8,7 @@ use Ramsey\Uuid\UuidInterface as RamseyUuidInterface;
 /**
  * Class to manage Uuids (Universal User Id)
  *
- * @package Davamigo\domain\core
+ * @package Davamigo\Domain\Core
  * @author davamigo@gmail.com
  */
 class UuidObj implements Uuid
