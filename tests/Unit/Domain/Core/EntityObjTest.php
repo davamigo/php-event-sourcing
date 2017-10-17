@@ -3,6 +3,7 @@
 namespace Test\Unit\Domain\Core;
 
 use Davamigo\Domain\Core\EntityObj;
+use Davamigo\Domain\Core\Exception\EntityException;
 use Davamigo\Domain\Core\Uuid;
 use Davamigo\Domain\Core\UuidObj;
 use PHPUnit\Framework\TestCase;
@@ -28,9 +29,7 @@ class EntityObjTest extends TestCase
     public function testEmptyConstructor()
     {
         /** @var EntityObj $entity */
-        $entity = $this->getMockBuilder(EntityObj::class)
-            ->setMethods(['create', 'serialize'])
-            ->getMock();
+        $entity = $this->createEntity(null);
 
         $uuid = $entity->uuid();
         $this->assertInstanceOf(Uuid::class, $uuid);
@@ -38,18 +37,64 @@ class EntityObjTest extends TestCase
     }
 
     /**
-     * Test non empty constructor od EntityObj
+     * Test constructor of EntityObj when an UUID provided
      */
-    public function testNonEmptyConstructor()
+    public function testConstructorWhenUuidProvided()
+    {
+        $uuid = UuidObj::create();
+
+        /** @var EntityObj $entity */
+        $entity = $this->createEntity($uuid);
+
+        $this->assertEquals($uuid, $entity->uuid());
+    }
+
+    /**
+     * Test constructor of EntityObj with a string representing an UUID provided
+     */
+    public function testConstructorWhenStringProvided()
     {
         $rawUuid = '131cce48-b1c9-11e7-b650-15133b52a0df';
 
         /** @var EntityObj $entity */
-        $entity = $this->getMockBuilder(EntityObj::class)
-            ->setConstructorArgs([ UuidObj::fromString($rawUuid) ])
-            ->setMethods(['create', 'serialize'])
-            ->getMock();
+        $entity = $this->createEntity($rawUuid);
 
         $this->assertEquals($rawUuid, $entity->uuid()->toString());
+    }
+
+    /**
+     * Test constructor of EntityObj when an invalid string provided
+     */
+    public function testConstructorWhenInvalidStringProvided()
+    {
+        $this->expectException(EntityException::class);
+
+        $rawUuid = 'this_is_not_an_uuid_';
+
+        $this->createEntity($rawUuid);
+    }
+
+    /**
+     * Test constructor of EntityObj when an invalid object provided
+     */
+    public function testConstructorWhenInvalidObjectProvided()
+    {
+        $this->expectException(EntityException::class);
+
+        $this->createEntity(new \DateTime());
+    }
+
+    /**
+     * Creates an entity using the mock builder because EntityObj is an abstract class
+     *
+     * @param Uuid|string|null $uuid
+     * @return EntityObj|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function createEntity($uuid)
+    {
+        return $this->getMockBuilder(EntityObj::class)
+            ->setConstructorArgs([ $uuid ])
+            ->setMethods(['create', 'serialize'])
+            ->getMock();
     }
 }

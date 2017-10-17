@@ -2,6 +2,8 @@
 
 namespace Davamigo\Domain\Core;
 
+use Davamigo\Domain\Core\Exception\UuidException;
+use Ramsey\Uuid\Exception\InvalidUuidStringException;
 use Ramsey\Uuid\Uuid as RamseyUuid;
 use Ramsey\Uuid\UuidInterface as RamseyUuidInterface;
 
@@ -30,6 +32,7 @@ class UuidObj implements Uuid
      * Creates a new Uuid
      *
      * @return Uuid
+     * @throws UuidException
      */
     public static function create() : Uuid
     {
@@ -41,16 +44,22 @@ class UuidObj implements Uuid
      *
      * @param string $str
      * @return Uuid
+     * @throws UuidException
      */
     public static function fromString(string $str) : Uuid
     {
-        return new self(RamseyUuid::fromString($str));
+        try {
+            return new self(RamseyUuid::fromString($str));
+        } catch (InvalidUuidStringException $exc) {
+            throw new UuidException('Invalid UUID string: ' . $str, 0, $exc);
+        }
     }
 
     /**
      * Converts the Uuid to a string
      *
      * @return string
+     * @throws UuidException
      */
     public function toString() : string
     {

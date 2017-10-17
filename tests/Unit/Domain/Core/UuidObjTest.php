@@ -2,6 +2,7 @@
 
 namespace Test\Unit\Domain\Core;
 
+use Davamigo\Domain\Core\Exception\UuidException;
 use Davamigo\Domain\Core\UuidObj;
 use PHPUnit\Framework\TestCase;
 
@@ -40,6 +41,16 @@ class UuidObjTest extends TestCase
         $str = $uuid->toString();
 
         $this->assertEquals($str, UuidObj::fromString($str)->toString());
+    }
+
+    /**
+     * Test that an exception is thrown when an invalid UUID is provided
+     */
+    public function testFromStringWhenInvalidUuid()
+    {
+        $this->expectException(UuidException::class);
+
+        UuidObj::fromString('this-is-not-an-uuuid');
     }
 
     /**

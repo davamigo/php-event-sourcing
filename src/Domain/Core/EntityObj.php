@@ -2,6 +2,9 @@
 
 namespace Davamigo\Domain\Core;
 
+use Davamigo\Domain\Core\Exception\EntityException;
+use Davamigo\Domain\Core\Exception\UuidException;
+
 /**
  * Abstract class for an entity object. An entity always has an uuid.
  *
@@ -16,11 +19,24 @@ abstract class EntityObj implements Entity
     /**
      * EntityObj constructor
      *
-     * @param Uuid|null $uuid
+     * @param Uuid|string|null $uuid
+     * @throws EntityException
      */
-    public function __construct(Uuid $uuid = null)
+    public function __construct($uuid = null)
     {
-        $this->uuid = $uuid ?: UuidObj::create();
+        if (null === $uuid) {
+            $this->uuid = UuidObj::create();
+        } elseif (is_string($uuid)) {
+            try {
+                $this->uuid = UuidObj::fromString($uuid);
+            } catch (UuidException $exc) {
+                throw new EntityException('Error paring an UUID: ' . $uuid, 0, $exc);
+            }
+        } elseif (!$uuid instanceof Uuid) {
+            throw new EntityException('Invalid UUID received: ' . get_class($uuid));
+        } else {
+            $this->uuid = $uuid;
+        }
     }
 
     /**
