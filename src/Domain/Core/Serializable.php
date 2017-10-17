@@ -11,7 +11,7 @@ namespace Davamigo\Domain\Core;
 interface Serializable
 {
     /**
-     * Creates a serializable object
+     * Creates a serializable object from an array
      *
      * @param array $data
      * @return Serializable
@@ -19,7 +19,7 @@ interface Serializable
     public static function create(array $data) : Serializable;
 
     /**
-     * Serializes the object
+     * Serializes the object to an array
      *
      * @return array
      */

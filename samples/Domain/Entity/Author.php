@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Examples\Domain\Entity;
+namespace Samples\Domain\Entity;
 
 use Davamigo\Domain\Core\EntityObj;
 use Davamigo\Domain\Core\Serializable;
@@ -9,7 +9,7 @@ use Davamigo\Domain\Core\Uuid;
 /**
  * Entity Author for testing purposes
  *
- * @package Test\Examples\Domain\Entity
+ * @package Test\samples\Domain\Entity
  * @author davamigo@gmail.com
  */
 class Author extends EntityObj
@@ -39,16 +39,16 @@ class Author extends EntityObj
     /**
      * Author constructor
      *
-     * @param Uuid $uuid
+     * @param Uuid|string $uuid
      * @param string $firstName
      * @param string $lastName
      */
     public function __construct(
-        Uuid $uuid = null,
+        $uuid = null,
         string $firstName = null,
         string $lastName = null
     ) {
-        parent::__construct();
+        parent::__construct($uuid);
         $this->firstName = $firstName;
         $this->lastName = $lastName;
     }
@@ -57,7 +57,7 @@ class Author extends EntityObj
      * Creates a serializable object
      *
      * @param array $data
-     * @return Serializable
+     * @return Author
      */
     public static function create(array $data) : Serializable
     {
@@ -76,7 +76,7 @@ class Author extends EntityObj
     public function serialize() : array
     {
         return [
-            'uuid'      => $this->uuid(),
+            'uuid'      => $this->uuid()->toString(),
             'firstName' => $this->firstName(),
             'lastName'  => $this->lastName()
         ];

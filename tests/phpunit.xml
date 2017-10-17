@@ -15,11 +15,13 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">../src</directory>
+            <directory suffix=".php">../samples</directory>
         </whitelist>
     </filter>
 
     <logging>
         <log type="coverage-html" target="../runtime/coverage" charset="UTF-8" yui="true" />
+        <log type="coverage-text" target="../runtime/coverage/coverage.txt" />
     </logging>
 
 </phpunit>
