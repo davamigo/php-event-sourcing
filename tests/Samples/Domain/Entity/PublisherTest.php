@@ -1,6 +1,7 @@
 <?php
 namespace Test\Samples\Domain\Entity;
 
+use Davamigo\Domain\Core\Exception\SerializableException;
 use Davamigo\Domain\Core\UuidObj;
 use Samples\Domain\Entity\Publisher;
 use PHPUnit\Framework\TestCase;
@@ -37,11 +38,29 @@ class PublisherTest extends TestCase
         $this->assertEquals($data['name'], $publisher->name());
     }
 
+    /**
+     * Test Publisher::create() function
+     */
+    public function testPublisherCreateWhenInvalidParamsProvided()
+    {
+        $this->expectException(SerializableException::class);
+
+        $data = [
+            'uuid' => UuidObj::create(),
+            'name' => '_the_name_',
+            'test' => '_another_field_'
+        ];
+
+        Publisher::create($data);
+    }
+    /**
+     * Test Publisher::serialize() function
+     */
     public function testPublisherSerialize()
     {
         $data = [
             'uuid' => UuidObj::create(),
-            'name' => '_a_publisher_'
+            'name' => '_another_publisher_'
         ];
 
         /** @var Publisher $publisher */

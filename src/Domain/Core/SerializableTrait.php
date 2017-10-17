@@ -25,11 +25,7 @@ trait SerializableTrait
 
         $class = new \ReflectionClass($obj);
         foreach ($data as $field => $value) {
-            try {
-                $property = self::getPropReflectedFromClass($class, $field);
-            } catch (\ReflectionException $exc) {
-                throw new SerializableException('Property ' . $field . ' does not exist in ' . self::class, 0, $exc);
-            }
+            $property = self::getPropReflectedRecursive($class, $field);
             $property->setAccessible(true);
             $property->setValue($obj, $value);
         }
@@ -46,7 +42,7 @@ trait SerializableTrait
     {
         $class = new \ReflectionClass(self::class);
 
-        return $this->getPropsReflectedFromClass($class);
+        return $this->getPropsReflectedRecursive($class);
     }
 
     /**
@@ -57,7 +53,7 @@ trait SerializableTrait
      * @return \ReflectionProperty
      * @throws SerializableException
      */
-    private static function getPropReflectedFromClass(\ReflectionClass $class, string $field) : \ReflectionProperty
+    private static function getPropReflectedRecursive(\ReflectionClass $class, string $field) : \ReflectionProperty
     {
         try {
             return $class->getProperty($field);
@@ -65,7 +61,7 @@ trait SerializableTrait
             $parent = $class->getParentClass();
             if ($parent) {
                 try {
-                    return self::getPropReflectedFromClass($parent, $field);
+                    return self::getPropReflectedRecursive($parent, $field);
                 } catch (SerializableException $subExc) {
                     // Do nothing
                 }
@@ -81,7 +77,7 @@ trait SerializableTrait
      * @param \ReflectionClass $class
      * @return array
      */
-    private function getPropsReflectedFromClass(\ReflectionClass $class)
+    private function getPropsReflectedRecursive(\ReflectionClass $class)
     {
         $data = [];
 
@@ -94,7 +90,7 @@ trait SerializableTrait
 
         $parent = $class->getParentClass();
         if ($parent) {
-            $data += $this->getPropsReflectedFromClass($parent);
+            $data += $this->getPropsReflectedRecursive($parent);
         }
 
         return $data;
