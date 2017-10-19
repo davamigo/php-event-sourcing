@@ -2,9 +2,9 @@
 
 namespace Samples\Domain\Entity;
 
-use Davamigo\Domain\Core\EntityObj;
-use Davamigo\Domain\Core\Serializable;
-use Davamigo\Domain\Core\Uuid;
+use Davamigo\Domain\Core\Entity\EntityBase;
+use Davamigo\Domain\Core\Serializable\Serializable;
+use Davamigo\Domain\Core\Uuid\Uuid;
 
 /**
  * Entity Author for testing purposes
@@ -12,7 +12,7 @@ use Davamigo\Domain\Core\Uuid;
  * @package Test\samples\Domain\Entity
  * @author davamigo@gmail.com
  */
-class Author extends EntityObj
+class Author extends EntityBase
 {
     /** @var string */
     private $firstName;
@@ -57,7 +57,7 @@ class Author extends EntityObj
      * Creates a serializable object
      *
      * @param array $data
-     * @return Author
+     * @return Serializable|Author
      */
     public static function create(array $data) : Serializable
     {

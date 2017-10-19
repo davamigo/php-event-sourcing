@@ -1,6 +1,8 @@
 <?php
 
-namespace Davamigo\Domain\Core\Exception;
+namespace Davamigo\Domain\Core\Uuid;
+
+use Davamigo\Domain\Core\CoreException;
 
 /**
  * Exception for Uuid classes

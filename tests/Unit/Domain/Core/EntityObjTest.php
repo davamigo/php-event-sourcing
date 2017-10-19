@@ -2,14 +2,14 @@
 
 namespace Test\Unit\Domain\Core;
 
-use Davamigo\Domain\Core\EntityObj;
-use Davamigo\Domain\Core\Exception\EntityException;
-use Davamigo\Domain\Core\Uuid;
-use Davamigo\Domain\Core\UuidObj;
+use Davamigo\Domain\Core\Entity\EntityBase;
+use Davamigo\Domain\Core\Entity\EntityException;
+use Davamigo\Domain\Core\Uuid\Uuid;
+use Davamigo\Domain\Core\Uuid\UuidObj;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Test of class Davamigo\Domain\Core\EntityObj
+ * Test of class Davamigo\Domain\Core\Entity\EntityObj
  *
  * @package Test\Unit\Domain\Core
  * @author davamigo@gmail.com
@@ -28,7 +28,7 @@ class EntityObjTest extends TestCase
      */
     public function testEmptyConstructor()
     {
-        /** @var EntityObj $entity */
+        /** @var \Davamigo\Domain\Core\Serializable\EntityObj $entity */
         $entity = $this->createEntity(null);
 
         $uuid = $entity->uuid();
@@ -43,7 +43,7 @@ class EntityObjTest extends TestCase
     {
         $uuid = UuidObj::create();
 
-        /** @var EntityObj $entity */
+        /** @var \Davamigo\Domain\Core\Serializable\EntityObj $entity */
         $entity = $this->createEntity($uuid);
 
         $this->assertEquals($uuid, $entity->uuid());
@@ -56,7 +56,7 @@ class EntityObjTest extends TestCase
     {
         $rawUuid = '131cce48-b1c9-11e7-b650-15133b52a0df';
 
-        /** @var EntityObj $entity */
+        /** @var \Davamigo\Domain\Core\Serializable\EntityObj $entity */
         $entity = $this->createEntity($rawUuid);
 
         $this->assertEquals($rawUuid, $entity->uuid()->toString());
@@ -87,12 +87,12 @@ class EntityObjTest extends TestCase
     /**
      * Creates an entity using the mock builder because EntityObj is an abstract class
      *
-     * @param Uuid|string|null $uuid
-     * @return EntityObj|\PHPUnit_Framework_MockObject_MockObject
+     * @param \Davamigo\Domain\Core\Uuid\Uuid|string|null $uuid
+     * @return \Davamigo\Domain\Core\Entity\EntityBase|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createEntity($uuid)
     {
-        return $this->getMockBuilder(EntityObj::class)
+        return $this->getMockBuilder(\Davamigo\Domain\Core\Entity\EntityBase::class)
             ->setConstructorArgs([ $uuid ])
             ->setMethods(['create', 'serialize'])
             ->getMock();

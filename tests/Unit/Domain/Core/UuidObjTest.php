@@ -2,12 +2,12 @@
 
 namespace Test\Unit\Domain\Core;
 
-use Davamigo\Domain\Core\Exception\UuidException;
-use Davamigo\Domain\Core\UuidObj;
+use Davamigo\Domain\Core\Uuid\UuidException;
+use Davamigo\Domain\Core\Uuid\UuidObj;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Test of class Davamigo\Domain\Core\UuidObj
+ * Test of class Davamigo\Domain\Core\Uuid\UuidObj
  *
  * @package Test\Unit\Domain\Core
  * @author davamigo@gmail.com

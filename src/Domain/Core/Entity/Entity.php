@@ -1,6 +1,9 @@
 <?php
 
-namespace Davamigo\Domain\Core;
+namespace Davamigo\Domain\Core\Entity;
+
+use Davamigo\Domain\Core\Serializable\Serializable;
+use Davamigo\Domain\Core\Uuid\Uuid;
 
 /**
  * Interface for an entity - Every entity has an uuid.

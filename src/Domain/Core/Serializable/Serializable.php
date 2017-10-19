@@ -1,6 +1,6 @@
 <?php
 
-namespace Davamigo\Domain\Core;
+namespace Davamigo\Domain\Core\Serializable;
 
 /**
  * Interface Serializable

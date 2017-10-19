@@ -1,8 +1,8 @@
 <?php
 namespace Test\Samples\Domain\Entity;
 
-use Davamigo\Domain\Core\Exception\SerializableException;
-use Davamigo\Domain\Core\UuidObj;
+use Davamigo\Domain\Core\Serializable\SerializableException;
+use Davamigo\Domain\Core\Uuid\UuidObj;
 use Samples\Domain\Entity\Publisher;
 use PHPUnit\Framework\TestCase;
 

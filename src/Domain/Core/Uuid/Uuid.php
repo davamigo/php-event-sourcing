@@ -1,8 +1,6 @@
 <?php
 
-namespace Davamigo\Domain\Core;
-
-use Davamigo\Domain\Core\Exception\UuidException;
+namespace Davamigo\Domain\Core\Uuid;
 
 /**
  * Interface for an Uuid (Universal User Id)

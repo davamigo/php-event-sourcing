@@ -1,8 +1,6 @@
 <?php
 
-namespace Davamigo\Domain\Core;
-
-use Davamigo\Domain\Core\Exception\SerializableException;
+namespace Davamigo\Domain\Core\Serializable;
 
 /**
  * Trait SerializableTrait

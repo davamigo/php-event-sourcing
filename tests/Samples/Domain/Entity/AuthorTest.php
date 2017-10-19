@@ -2,7 +2,7 @@
 
 namespace Test\Samples\Domain\Entity;
 
-use Davamigo\Domain\Core\UuidObj;
+use Davamigo\Domain\Core\Uuid\UuidObj;
 use PHPUnit\Framework\TestCase;
 use Samples\Domain\Entity\Author;
 

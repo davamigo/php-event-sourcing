@@ -1,17 +1,18 @@
 <?php
 
-namespace Davamigo\Domain\Core;
+namespace Davamigo\Domain\Core\Entity;
 
-use Davamigo\Domain\Core\Exception\EntityException;
-use Davamigo\Domain\Core\Exception\UuidException;
+use Davamigo\Domain\Core\Uuid\Uuid;
+use Davamigo\Domain\Core\Uuid\UuidException;
+use Davamigo\Domain\Core\Uuid\UuidObj;
 
 /**
- * Abstract class for an entity object. An entity always has an uuid.
+ * Trait to auto implement the Entity interface
  *
- * @package Davamigo\Domain\Core
+ * @package Davamigo\Domain\Core\Entity
  * @author davamigo@gmail.com
  */
-abstract class EntityObj implements Entity
+trait EntityTrait
 {
     /** @var Uuid */
     private $uuid;

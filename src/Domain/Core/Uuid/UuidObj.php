@@ -1,8 +1,7 @@
 <?php
 
-namespace Davamigo\Domain\Core;
+namespace Davamigo\Domain\Core\Uuid;
 
-use Davamigo\Domain\Core\Exception\UuidException;
 use Ramsey\Uuid\Exception\InvalidUuidStringException;
 use Ramsey\Uuid\Uuid as RamseyUuid;
 use Ramsey\Uuid\UuidInterface as RamseyUuidInterface;

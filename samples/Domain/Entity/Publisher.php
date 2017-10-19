@@ -2,8 +2,8 @@
 
 namespace Samples\Domain\Entity;
 
-use Davamigo\Domain\Core\EntityObj;
-use Davamigo\Domain\Core\SerializableTrait;
+use Davamigo\Domain\Core\Entity\EntityBase;
+use Davamigo\Domain\Core\Serializable\SerializableTrait;
 
 /**
  * Class Publisher
@@ -11,7 +11,7 @@ use Davamigo\Domain\Core\SerializableTrait;
  * @package Samples\Domain\Entity
  * @author davamigo@gmail.com
  */
-class Publisher extends EntityObj
+class Publisher extends EntityBase
 {
     /** @var string */
     private $name;

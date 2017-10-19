@@ -1,6 +1,6 @@
 <?php
 
-namespace Davamigo\Domain\Core\Exception;
+namespace Davamigo\Domain\Core;
 
 /**
  * Core Exception for all project

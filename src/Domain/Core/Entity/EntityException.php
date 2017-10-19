@@ -1,6 +1,8 @@
 <?php
 
-namespace Davamigo\Domain\Core\Exception;
+namespace Davamigo\Domain\Core\Entity;
+
+use Davamigo\Domain\Core\Serializable\SerializableException;
 
 /**
  * Exception for Entity classes
