@@ -58,8 +58,15 @@ class PublisherTest extends TestCase
      */
     public function testPublisherSerialize()
     {
+        $uuid = UuidObj::create();
+
         $data = [
-            'uuid' => UuidObj::create(),
+            'uuid' => $uuid,
+            'name' => '_another_publisher_'
+        ];
+
+        $expected = [
+            'uuid' => $uuid->toString(),
             'name' => '_another_publisher_'
         ];
 
@@ -67,6 +74,6 @@ class PublisherTest extends TestCase
         $publisher = Publisher::create($data);
         $result = $publisher->serialize();
 
-        $this->assertEquals($data, $result);
+        $this->assertEquals($expected, $result);
     }
 }

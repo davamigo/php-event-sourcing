@@ -28,7 +28,7 @@ class EntityObjTest extends TestCase
      */
     public function testEmptyConstructor()
     {
-        /** @var \Davamigo\Domain\Core\Serializable\EntityObj $entity */
+        /** @var EntityBase $entity */
         $entity = $this->createEntity(null);
 
         $uuid = $entity->uuid();
@@ -43,7 +43,7 @@ class EntityObjTest extends TestCase
     {
         $uuid = UuidObj::create();
 
-        /** @var \Davamigo\Domain\Core\Serializable\EntityObj $entity */
+        /** @var EntityBase $entity */
         $entity = $this->createEntity($uuid);
 
         $this->assertEquals($uuid, $entity->uuid());
@@ -56,7 +56,7 @@ class EntityObjTest extends TestCase
     {
         $rawUuid = '131cce48-b1c9-11e7-b650-15133b52a0df';
 
-        /** @var \Davamigo\Domain\Core\Serializable\EntityObj $entity */
+        /** @var EntityBase $entity */
         $entity = $this->createEntity($rawUuid);
 
         $this->assertEquals($rawUuid, $entity->uuid()->toString());
@@ -92,7 +92,7 @@ class EntityObjTest extends TestCase
      */
     private function createEntity($uuid)
     {
-        return $this->getMockBuilder(\Davamigo\Domain\Core\Entity\EntityBase::class)
+        return $this->getMockBuilder(EntityBase::class)
             ->setConstructorArgs([ $uuid ])
             ->setMethods(['create', 'serialize'])
             ->getMock();

@@ -4,9 +4,10 @@ namespace Samples\Domain\Entity;
 
 use Davamigo\Domain\Core\Entity\EntityBase;
 use Davamigo\Domain\Core\Serializable\SerializableTrait;
+use Davamigo\Domain\Core\Uuid\Uuid;
 
 /**
- * Class Publisher
+ * Entity Publisher
  *
  * @package Samples\Domain\Entity
  * @author davamigo@gmail.com
@@ -22,6 +23,18 @@ class Publisher extends EntityBase
     public function name()
     {
         return $this->name;
+    }
+
+    /**
+     * Publisher constructor
+     *
+     * @param Uuid $uuid
+     * @param string $name
+     */
+    public function __construct(Uuid $uuid = null, string $name = null)
+    {
+        parent::__construct($uuid);
+        $this->name = $name;
     }
 
     /**

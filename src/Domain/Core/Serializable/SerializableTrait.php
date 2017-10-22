@@ -2,6 +2,8 @@
 
 namespace Davamigo\Domain\Core\Serializable;
 
+use Davamigo\Domain\Core\Uuid\Uuid;
+
 /**
  * Trait SerializableTrait
  *
@@ -83,7 +85,8 @@ trait SerializableTrait
         $properties = $class->getProperties();
         foreach ($properties as $property) {
             $property->setAccessible(true);
-            $data[$property->getName()] = $property->getValue($this);
+            $value = $property->getValue($this);
+            $data[$property->getName()] = $this->getSerializedPropertyValue($value);
         }
 
         $parent = $class->getParentClass();
@@ -92,5 +95,41 @@ trait SerializableTrait
         }
 
         return $data;
+    }
+
+    /**
+     * Serializes a single value by converting to an scalar value (string, int, bool, ...)
+     *
+     * @param $value
+     * @return array|string|int|bool|null
+     * @throws SerializableException
+     */
+    private function getSerializedPropertyValue($value)
+    {
+        if ($value instanceof Serializable) {
+            return $value->serialize();
+        }
+
+        if ($value instanceof Uuid) {
+            return $value->toString();
+        }
+
+        if ($value instanceof \DateTime) {
+            return $value->format(\DateTime::RFC3339);
+        }
+
+        if (is_array($value)) {
+            $data = [];
+            foreach ($value as $key => $subvalue) {
+                $data[$key] = $this->getSerializedPropertyValue($subvalue);
+            }
+            return $data;
+        }
+
+        if (is_object($value)) {
+            throw new SerializableException('The class ' . get_class($value) . ' is not serializable!');
+        }
+
+        return $value;
     }
 }
