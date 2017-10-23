@@ -68,6 +68,30 @@ class AutoSerializeHelper
      */
     private static function serializeProperty($property)
     {
+        if (is_object($property)) {
+            return static::serializePropertyObject($property);
+        }
+
+        if (is_array($property)) {
+            $result = [];
+            foreach ($property as $key => $subvalue) {
+                $result[$key] = static::serializeProperty($subvalue);
+            }
+            return $result;
+        }
+
+        return $property;
+    }
+
+    /**
+     * Serializes a property when is an object
+     *
+     * @param object $property
+     * @return array|string
+     * @throws AutoSerializeException
+     */
+    private static function serializePropertyObject($property)
+    {
         if ($property instanceof Serializable) {
             return $property->serialize();
         }
@@ -80,18 +104,6 @@ class AutoSerializeHelper
             return $property->format(\DateTime::RFC3339);
         }
 
-        if (is_array($property)) {
-            $data = [];
-            foreach ($property as $key => $subvalue) {
-                $data[$key] = static::serializeProperty($subvalue);
-            }
-            return $data;
-        }
-
-        if (is_object($property)) {
-            throw new AutoSerializeException('The class ' . get_class($property) . ' is not serializable!');
-        }
-
-        return $property;
+        throw new AutoSerializeException('The class ' . get_class($property) . ' is not serializable!');
     }
 }
