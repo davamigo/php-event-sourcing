@@ -19,32 +19,61 @@ use PHPUnit\Framework\TestCase;
  */
 class BookTest extends TestCase
 {
+    /** @var \DateTime */
+    private $date;
+
+    /** @var Publisher */
+    private $publisher;
+
+    /** @var Author */
+    private $author;
+
+    /** @var Book */
+    private $book;
+
+    /**
+     * Sets up the fixture, for example, open a network connection.
+     * This method is called before a test is executed.
+     */
+    protected function setUp()
+    {
+        $this->date = new \DateTime();
+        $this->publisher = new Publisher(null, "_the_publisher_");
+        $this->author = new Author(null, "_the_author_name_", "_the_author_surname_");
+        $this->book = new Book(null, "_the_book_name_", $this->publisher, [ $this->author ], $this->date);
+    }
+
+    /**
+     * Test Book::__construct() function
+     */
+    public function testConstructorAndGetters()
+    {
+        $this->assertEquals($this->publisher, $this->book->publisher());
+        $this->assertContains($this->author, $this->book->authors());
+        $this->assertEquals($this->date, $this->book->releaseDate());
+    }
+
     /**
      * Test Book::serialize() function
      */
     public function testSerialize()
     {
-        $publisher = new Publisher(null, "_the_publisher_");
-        $author = new Author(null, "_the_author_name_", "_the_author_surname_");
-        $book = new Book(null, "_the_book_name_", $publisher, [ $author ], $date);
-        $date = new \DateTime();
-
         $expected = [
-            'uuid' => $book->uuid()->toString(),
-            'name' => $book->name(),
-            'releaseDate' => $date->format(\DateTime::RFC3339),
+            'uuid' => $this->book->uuid()->toString(),
+            'name' => $this->book->name(),
+            'releaseDate' => $this->date->format(\DateTime::RFC3339),
             'publisher' => [
-                'uuid' => $publisher->uuid()->toString(),
-                'name' => $publisher->name()
+                'uuid' => $this->publisher->uuid()->toString(),
+                'name' => $this->publisher->name()
             ],
             'authors' => [[
-                'uuid' => $author->uuid()->toString(),
-                'firstName' => $author->firstName(),
-                'lastName' => $author->lastName()
+                'uuid' => $this->author->uuid()->toString(),
+                'firstName' => $this->author->firstName(),
+                'lastName' => $this->author->lastName()
             ]]
         ];
 
-        $result = $book->serialize();
+        $result = $this->book->serialize();
         $this->assertEquals($expected, $result);
     }
 }
