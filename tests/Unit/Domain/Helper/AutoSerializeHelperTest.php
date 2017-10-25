@@ -1,6 +1,6 @@
 <?php
 
-namespace Unit\Domain\Helper;
+namespace Test\Unit\Domain\Helper;
 
 use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Uuid\UuidObj;
@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class AutoSerializeHelperTest
  *
- * @package Unit\Domain\Helper
+ * @package Test\Unit\Domain\Helper
  * @author davamigo@gmail.com
  *
  * @group Test_Unit_Domain_Helper_AutoSerializeHelper
