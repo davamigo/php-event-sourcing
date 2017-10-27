@@ -2,7 +2,12 @@
 
 namespace Test\Unit\Domain\Helper;
 
+use Davamigo\Domain\Core\Entity\EntityBase;
+use Davamigo\Domain\Core\Serializable\Serializable;
+use Davamigo\Domain\Core\Serializable\SerializableTrait;
 use Davamigo\Domain\Core\Uuid\UuidObj;
+use Davamigo\Domain\Helpers\AutoSerializeHelper;
+use Davamigo\Domain\Helpers\AutoUnserializeException;
 use Davamigo\Domain\Helpers\AutoUnserializeHelper;
 use PHPUnit\Framework\TestCase;
 
@@ -22,9 +27,9 @@ use PHPUnit\Framework\TestCase;
 class AutoUnserializeHelperTest extends TestCase
 {
     /**
-     * Test AutoUnserializeHelperTest::serialize() happy path
+     * Test AutoUnserializeHelperTest::unserialize() happy path
      */
-    public function testSerialize()
+    public function testUnserialize()
     {
         $obj = new class {
             public $int;
@@ -55,5 +60,65 @@ class AutoUnserializeHelperTest extends TestCase
         $this->assertEquals($data['string'], $result->string);
         $this->assertEquals($expectedDateTime, $result->datetime);
         $this->assertEquals($expectedUuid, $result->uuid);
+    }
+
+    /**
+     * Test AutoUnserializeHelperTest::unserialize() when propery found in parent
+     */
+    public function testUnserializeWhenPropertyFoundInParent()
+    {
+        $obj = new class extends EntityBase {
+            use SerializableTrait;
+        };
+
+        $data = [
+            'uuid' => '0f594cac-b7ee-11e7-83c1-5f8a8a446ff9'
+        ];
+
+        $result = AutoUnserializeHelper::unserialize($obj, $data);
+        $this->assertEquals('0f594cac-b7ee-11e7-83c1-5f8a8a446ff9', $result->uuid()->toString());
+    }
+
+    /**
+     * Test AutoUnserializeHelperTest::unserialize() when propery not found and the class has parent
+     */
+    public function testUnserializeWhenProperyNotFoundAndHasParent()
+    {
+        $obj = new class extends EntityBase {
+            use SerializableTrait;
+        };
+
+        $data = [
+            'str' => '_a_str_'
+        ];
+
+        $this->expectException(AutoUnserializeException::class);
+        AutoUnserializeHelper::unserialize($obj, $data);
+    }
+
+    /**
+     * Test AutoUnserializeHelperTest::unserialize() when propery not found and the class hasn't parent
+     */
+    public function testUnserializeWhenProperyNotFoundAndHasNoParent()
+    {
+        $obj = new class {
+        };
+
+        $data = [
+            'str' => '_a_str_'
+        ];
+
+        $this->expectException(AutoUnserializeException::class);
+        AutoUnserializeHelper::unserialize($obj, $data);
+    }
+
+    /**
+     * Test AutoUnserializeHelperTest::unserialize() when non-object provided
+     */
+    public function testUnserializeWhenNonObjectProvided()
+    {
+        $this->expectException(AutoUnserializeException::class);
+
+        AutoUnserializeHelper::unserialize('_non_object_', ['_something_']);
     }
 }

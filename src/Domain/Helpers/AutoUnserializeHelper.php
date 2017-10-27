@@ -1,6 +1,7 @@
 <?php
 
 namespace Davamigo\Domain\Helpers;
+
 use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Uuid\Uuid;
 use Davamigo\Domain\Core\Uuid\UuidObj;
@@ -19,18 +20,18 @@ class AutoUnserializeHelper
      * @param object $obj
      * @param array $data
      * @return object
-     * @throws AutoSerializeException
+     * @throws AutoUnserializeException
      */
     public static function unserialize($obj, array $data)
     {
         if (!is_object($obj)) {
-            throw new AutoSerializeException('The param $obj must be an object!');
+            throw new AutoUnserializeException('The param $obj must be an object!');
         }
 
         $class = new \ReflectionClass(get_class($obj));
         foreach ($data as $field => $rawValue) {
             // Find the property in the class and in the parents (recursive)
-            $property = static::getPropReflectedRecursive($class, $field);
+            $property = static::findProperty($class, $field);
             $property->setAccessible(true);
 
             // Get the old value of the property (to find out the type or class)
@@ -54,7 +55,7 @@ class AutoUnserializeHelper
      * @return \ReflectionProperty
      * @throws AutoUnserializeException
      */
-    private static function getPropReflectedRecursive(\ReflectionClass $class, string $field) : \ReflectionProperty
+    private static function findProperty(\ReflectionClass $class, string $field) : \ReflectionProperty
     {
         try {
             return $class->getProperty($field);
@@ -62,7 +63,7 @@ class AutoUnserializeHelper
             $parent = $class->getParentClass();
             if ($parent) {
                 try {
-                    return self::getPropReflectedRecursive($parent, $field);
+                    return self::findProperty($parent, $field);
                 } catch (AutoUnserializeException $subExc) {
                     // Do nothing
                 }
@@ -78,8 +79,30 @@ class AutoUnserializeHelper
      * @param mixed $baseType
      * @param mixed $rawValue
      * @return mixed
+     * @throws AutoUnserializeException
      */
     private static function getNewPropertyValue($baseType, $rawValue)
+    {
+        if (is_object($baseType)) {
+            return static::getNewObjectPropertyValue($baseType, $rawValue);
+        }
+
+        if (is_array($baseType)) {
+            return static::getNewArrayPropertyValue($baseType, $rawValue);
+        }
+
+        return $rawValue;
+    }
+
+    /**
+     * Convert the raw value to the same type or class than the vase type
+     *
+     * @param mixed $baseType
+     * @param mixed $rawValue
+     * @return mixed
+     * @throws AutoUnserializeException
+     */
+    private static function getNewObjectPropertyValue($baseType, $rawValue)
     {
         if ($baseType instanceof Serializable) {
             return $baseType::create($rawValue);
@@ -93,8 +116,30 @@ class AutoUnserializeHelper
             return \DateTime::createFromFormat(\DateTime::RFC3339, $rawValue);
         }
 
-        // TODO unserialize arrays
+        throw new AutoUnserializeException('The class ' . get_class($baseType) . ' is not unserializable!');
+    }
 
-        return $rawValue;
+    /**
+     * Convert the raw value to the same type or class than the vase type
+     *
+     * @param array $baseType
+     * @param mixed $rawValue
+     * @return mixed
+     * @throws AutoUnserializeException
+     */
+    private static function getNewArrayPropertyValue(array $baseType, $rawValue)
+    {
+        if (!is_array($rawValue)) {
+            throw new AutoUnserializeException('The value oth thi property must be an array!');
+
+        }
+
+        foreach ($baseType as $key => $subvalue) {
+            if (array_key_exists($key, $rawValue)) {
+                $baseType[$key] = static::getNewPropertyValue($subvalue, $rawValue[$key]);
+            }
+        }
+
+        return $baseType;
     }
 }
