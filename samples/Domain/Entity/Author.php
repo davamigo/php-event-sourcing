@@ -3,16 +3,15 @@
 namespace Samples\Domain\Entity;
 
 use Davamigo\Domain\Core\Entity\EntityBase;
-use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Uuid\Uuid;
 
 /**
- * Entity Author for testing purposes
+ * Abstract entity Author for sampling purposes
  *
- * @package Test\samples\Domain\Entity
+ * @package Samples\Domain\Entity
  * @author davamigo@gmail.com
  */
-class Author extends EntityBase
+abstract class Author extends EntityBase
 {
     /** @var string */
     private $firstName;
@@ -51,34 +50,5 @@ class Author extends EntityBase
         parent::__construct($uuid);
         $this->firstName = $firstName;
         $this->lastName = $lastName;
-    }
-
-    /**
-     * Creates a serializable object
-     *
-     * @param array $data
-     * @return Serializable|Author
-     */
-    public static function create(array $data) : Serializable
-    {
-        return new self(
-            $data['uuid'] ?? null,
-            $data['firstName'] ?? null,
-            $data['lastName'] ?? null
-        );
-    }
-
-    /**
-     * Serializes the object
-     *
-     * @return array
-     */
-    public function serialize() : array
-    {
-        return [
-            'uuid'      => $this->uuid()->toString(),
-            'firstName' => $this->firstName(),
-            'lastName'  => $this->lastName()
-        ];
     }
 }

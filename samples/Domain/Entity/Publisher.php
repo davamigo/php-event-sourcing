@@ -3,16 +3,15 @@
 namespace Samples\Domain\Entity;
 
 use Davamigo\Domain\Core\Entity\EntityBase;
-use Davamigo\Domain\Core\Serializable\SerializableTrait;
 use Davamigo\Domain\Core\Uuid\Uuid;
 
 /**
- * Entity Publisher
+ * Abstract entity Publisher for sampling purposes
  *
  * @package Samples\Domain\Entity
  * @author davamigo@gmail.com
  */
-class Publisher extends EntityBase
+abstract class Publisher extends EntityBase
 {
     /** @var string */
     private $name;
@@ -36,10 +35,4 @@ class Publisher extends EntityBase
         parent::__construct($uuid);
         $this->name = $name;
     }
-
-    /**
-     * @method create
-     * @method serialize
-     */
-    use SerializableTrait;
 }

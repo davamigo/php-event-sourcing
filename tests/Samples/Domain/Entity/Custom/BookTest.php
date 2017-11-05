@@ -1,13 +1,16 @@
 <?php
 
-namespace Samples\Domain\Entity;
+namespace Test\Samples\Domain\Entity\Custom;
 
 use PHPUnit\Framework\TestCase;
+use Samples\Domain\Entity\Custom\Author;
+use Samples\Domain\Entity\Custom\Book;
+use Samples\Domain\Entity\Custom\Publisher;
 
 /**
  * Test of class Samples\Domain\Entity\Book
  *
- * @package Samples\Domain\Entity
+ * @package Test\Samples\Domain\Entity\Custom
  * @author davamigo@gmail.com
  *
  * @group Test_Samples_Domain_Entity_Book
@@ -26,7 +29,10 @@ class BookTest extends TestCase
     private $publisher;
 
     /** @var Author */
-    private $author;
+    private $author1;
+
+    /** @var Author */
+    private $author2;
 
     /** @var Book */
     private $book;
@@ -38,9 +44,16 @@ class BookTest extends TestCase
     protected function setUp()
     {
         $this->date = new \DateTime();
-        $this->publisher = new Publisher(null, "_the_publisher_");
-        $this->author = new Author(null, "_the_author_name_", "_the_author_surname_");
-        $this->book = new Book(null, "_the_book_name_", $this->publisher, [ $this->author ], $this->date);
+        $this->publisher = new Publisher(null, '_the_publisher_');
+        $this->author1 = new Author(null, '_the_author1_name_', '_the_author1_surname_');
+        $this->author2 = new Author(null, '_the_author2_name_', '_the_author2_surname_');
+        $this->book = new Book(
+            null,
+            '_the_book_name_',
+            $this->publisher,
+            $this->date,
+            [ $this->author1, $this->author2 ]
+        );
     }
 
     /**
@@ -48,9 +61,11 @@ class BookTest extends TestCase
      */
     public function testConstructorAndGetters()
     {
+        $this->assertEquals('_the_book_name_', $this->book->name());
         $this->assertEquals($this->publisher, $this->book->publisher());
-        $this->assertContains($this->author, $this->book->authors());
         $this->assertEquals($this->date, $this->book->releaseDate());
+        $this->assertContains($this->author1, $this->book->authors());
+        $this->assertContains($this->author2, $this->book->authors());
     }
 
     /**
@@ -60,16 +75,20 @@ class BookTest extends TestCase
     {
         $expected = [
             'uuid' => $this->book->uuid()->toString(),
-            'name' => $this->book->name(),
+            'name' => '_the_book_name_',
             'releaseDate' => $this->date->format(\DateTime::RFC3339),
             'publisher' => [
                 'uuid' => $this->publisher->uuid()->toString(),
-                'name' => $this->publisher->name()
+                'name' => '_the_publisher_'
             ],
             'authors' => [[
-                'uuid' => $this->author->uuid()->toString(),
-                'firstName' => $this->author->firstName(),
-                'lastName' => $this->author->lastName()
+                'uuid' => $this->author1->uuid()->toString(),
+                'firstName' => '_the_author1_name_',
+                'lastName' => '_the_author1_surname_'
+            ], [
+                'uuid' => $this->author2->uuid()->toString(),
+                'firstName' => '_the_author2_name_',
+                'lastName' => '_the_author2_surname_'
             ]]
         ];
 

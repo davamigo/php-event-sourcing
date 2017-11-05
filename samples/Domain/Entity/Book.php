@@ -3,7 +3,6 @@
 namespace Samples\Domain\Entity;
 
 use Davamigo\Domain\Core\Entity\EntityBase;
-use Davamigo\Domain\Core\Serializable\SerializableTrait;
 use Davamigo\Domain\Core\Uuid\Uuid;
 
 /**
@@ -12,7 +11,7 @@ use Davamigo\Domain\Core\Uuid\Uuid;
  * @package Samples\Domain\Entity
  * @author davamigo@gmail.com
  */
-class Book extends EntityBase
+abstract class Book extends EntityBase
 {
     /** @var string */
     private $name;
@@ -20,34 +19,11 @@ class Book extends EntityBase
     /** @var Publisher */
     private $publisher;
 
-    /** @var Author[] */
-    private $authors;
-
     /** @var \DateTime */
     private $releaseDate;
 
-    /**
-     * Book constructor.
-     *
-     * @param Uuid $uuid
-     * @param string $name
-     * @param Publisher $publisher
-     * @param Author[] $authors
-     * @param \DateTime $releaseDate
-     */
-    public function __construct(
-        Uuid $uuid = null,
-        string $name = null,
-        Publisher $publisher = null,
-        array $authors = [],
-        \DateTime $releaseDate = null
-    ) {
-        parent::__construct($uuid);
-        $this->name = $name;
-        $this->publisher = $publisher ?: new Publisher();
-        $this->authors = $authors;
-        $this->releaseDate = $releaseDate ?: new \DateTime();
-    }
+    /** @var Author[] */
+    private $authors;
 
     /**
      * @return string
@@ -66,14 +42,6 @@ class Book extends EntityBase
     }
 
     /**
-     * @return Author[]
-     */
-    public function authors()
-    {
-        return $this->authors;
-    }
-
-    /**
      * @return \DateTime
      */
     public function releaseDate()
@@ -82,8 +50,33 @@ class Book extends EntityBase
     }
 
     /**
-     * @method create
-     * @method serialize
+     * @return Author[]
      */
-    use SerializableTrait;
+    public function authors()
+    {
+        return $this->authors;
+    }
+
+    /**
+     * Book constructor.
+     *
+     * @param Uuid $uuid
+     * @param string $name
+     * @param Publisher $publisher
+     * @param \DateTime $releaseDate
+     * @param Author[] $authors
+     */
+    public function __construct(
+        Uuid $uuid = null,
+        string $name = null,
+        Publisher $publisher = null,
+        \DateTime $releaseDate = null,
+        array $authors = []
+    ) {
+        parent::__construct($uuid);
+        $this->name = $name;
+        $this->publisher = $publisher ?: null;
+        $this->releaseDate = $releaseDate ?: new \DateTime();
+        $this->authors = $authors;
+    }
 }
