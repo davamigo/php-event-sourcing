@@ -1,17 +1,17 @@
 <?php
 
-namespace Test\Samples\Domain\Entity\Custom;
+namespace Test\Samples\Domain\Entity\Auto;
 
-use Samples\Domain\Entity\Custom\Publisher;
+use Samples\Domain\Entity\Auto\Publisher;
 use Test\Samples\Domain\Entity\PublisherTest as BasePublisherTest;
 
 /**
  * Test of class Samples\Domain\Entity\Publisher
  *
- * @package Test\Samples\Domain\Entity\Custom
+ * @package Test\Samples\Domain\Entity\Auto
  * @author davamigo@gmail.com
  *
- * @group Test_Samples_Domain_Entity_Publisher_Custom
+ * @group Test_Samples_Domain_Entity_Publisher_Auto
  * @group Test_Samples_Domain_Entity_Publisher
  * @group Test_Samples_Domain_Entity
  * @group Test_Samples_Domain

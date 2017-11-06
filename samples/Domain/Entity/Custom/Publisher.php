@@ -17,7 +17,7 @@ class Publisher extends BasePublisher
      * Creates a serializable object from an array
      *
      * @param array $data
-     * @return Serializable
+     * @return Serializable|Publisher
      */
     public static function create(array $data) : Serializable
     {

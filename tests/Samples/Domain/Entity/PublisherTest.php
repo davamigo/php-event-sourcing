@@ -34,14 +34,14 @@ abstract class PublisherTest extends TestCase
     public function testPublisherCreate()
     {
         $data = [
-            'uuid' => UuidObj::create(),
-            'name' => '_a_publisher_'
+            'uuid' => UuidObj::create()->toString(),
+            'name' => '_some_publisher_'
         ];
 
         /** @var Publisher $publisher */
         $publisher = $this->createPublisher($data);
 
-        $this->assertEquals($data['uuid'], $publisher->uuid());
+        $this->assertEquals($data['uuid'], $publisher->uuid()->toString());
         $this->assertEquals($data['name'], $publisher->name());
     }
 
@@ -53,11 +53,6 @@ abstract class PublisherTest extends TestCase
         $uuid = UuidObj::create();
 
         $data = [
-            'uuid' => $uuid,
-            'name' => '_another_publisher_'
-        ];
-
-        $expected = [
             'uuid' => $uuid->toString(),
             'name' => '_another_publisher_'
         ];
@@ -66,6 +61,6 @@ abstract class PublisherTest extends TestCase
         $publisher = $this->createPublisher($data);
         $result = $publisher->serialize();
 
-        $this->assertEquals($expected, $result);
+        $this->assertEquals($data, $result);
     }
 }

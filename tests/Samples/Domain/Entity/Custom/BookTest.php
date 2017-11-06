@@ -13,6 +13,7 @@ use Samples\Domain\Entity\Custom\Publisher;
  * @package Test\Samples\Domain\Entity\Custom
  * @author davamigo@gmail.com
  *
+ * @group Test_Samples_Domain_Entity_Book_Custom
  * @group Test_Samples_Domain_Entity_Book
  * @group Test_Samples_Domain_Entity
  * @group Test_Samples_Domain
