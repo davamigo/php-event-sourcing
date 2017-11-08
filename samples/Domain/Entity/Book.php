@@ -60,14 +60,14 @@ abstract class Book extends EntityBase
     /**
      * Book constructor.
      *
-     * @param Uuid $uuid
+     * @param Uuid|string $uuid
      * @param string $name
      * @param Publisher $publisher
      * @param \DateTime $releaseDate
      * @param Author[] $authors
      */
     public function __construct(
-        Uuid $uuid = null,
+        $uuid = null,
         string $name = null,
         Publisher $publisher = null,
         \DateTime $releaseDate = null,
@@ -75,8 +75,8 @@ abstract class Book extends EntityBase
     ) {
         parent::__construct($uuid);
         $this->name = $name;
-        $this->publisher = $publisher ?: null;
-        $this->releaseDate = $releaseDate ?: new \DateTime();
+        $this->publisher = $publisher;
+        $this->releaseDate = $releaseDate;
         $this->authors = $authors;
     }
 }

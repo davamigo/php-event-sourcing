@@ -17,14 +17,14 @@ class Book extends BaseBook
     /**
      * Book constructor.
      *
-     * @param Uuid $uuid
+     * @param Uuid|string $uuid
      * @param string $name
      * @param Publisher $publisher
      * @param \DateTime $releaseDate
      * @param Author[] $authors
      */
     public function __construct(
-        Uuid $uuid = null,
+        $uuid = null,
         string $name = null,
         Publisher $publisher = null,
         \DateTime $releaseDate = null,
@@ -34,8 +34,8 @@ class Book extends BaseBook
             $uuid,
             $name,
             $publisher ?: new Publisher(),
-            $releaseDate,
-            $authors
+            $releaseDate  ?: new \DateTime(),
+            !empty($authors) ? $authors : [ new Author() ]
         );
     }
 

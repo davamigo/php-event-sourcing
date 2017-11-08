@@ -109,7 +109,12 @@ class AutoUnserializeHelper
         }
 
         if ($baseType instanceof Uuid) {
-            return UuidObj::fromString($rawValue);
+            if (null === $rawValue) {
+                $uuid = UuidObj::create();
+            } else {
+                $uuid = UuidObj::fromString($rawValue);
+            }
+            return $uuid;
         }
 
         if ($baseType instanceof \DateTime) {
@@ -122,24 +127,28 @@ class AutoUnserializeHelper
     /**
      * Convert the raw value to the same type or class than the vase type
      *
-     * @param array $baseType
-     * @param mixed $rawValue
+     * @param array $baseArray
+     * @param mixed $valuesArray
      * @return mixed
      * @throws AutoUnserializeException
      */
-    private static function getNewArrayPropertyValue(array $baseType, $rawValue)
+    private static function getNewArrayPropertyValue(array $baseArray, $valuesArray)
     {
-        if (!is_array($rawValue)) {
-            throw new AutoUnserializeException('The value oth thi property must be an array!');
+        if (!is_array($valuesArray)) {
+            throw new AutoUnserializeException('The value of the property must be an array!');
 
         }
 
-        foreach ($baseType as $key => $subvalue) {
-            if (array_key_exists($key, $rawValue)) {
-                $baseType[$key] = static::getNewPropertyValue($subvalue, $rawValue[$key]);
+        $result = [];
+        $baseObj = reset($baseArray);
+        foreach ($valuesArray as $key => $subvalue) {
+            if (null === $baseObj) {
+                $result[$key] = $subvalue;
+            } else {
+                $result[$key] = static::getNewPropertyValue($baseObj, $subvalue);
             }
         }
 
-        return $baseType;
+        return $result;
     }
 }
