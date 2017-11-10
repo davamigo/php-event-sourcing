@@ -57,7 +57,7 @@ class SerializableTraitTest extends TestCase
     /**
      * Test SerializableTrait::serialize() when a non serializable property found
      */
-    public function testSerializeWhenNonSerializableProperyFound()
+    public function testSerializeWhenNonSerializablePropertyFound()
     {
         $this->expectException(SerializableException::class);
 
@@ -71,5 +71,57 @@ class SerializableTraitTest extends TestCase
         };
 
         $obj->serialize();
+    }
+
+    /**
+     * Test SerializableTrait::create() happy path
+     */
+    public function testCreate()
+    {
+        $obj = new class implements Serializable {
+            use SerializableTrait;
+            public $int;
+            public $string;
+            public $datetime;
+            public $uuid;
+            public function __construct()
+            {
+                $this->datetime = new \DateTime();
+                $this->uuid = UuidObj::create();
+            }
+        };
+
+        $data = [
+            'int' => 101,
+            'string' => '_text_',
+            'datetime' => '2000-01-01T00:00:00+00:00',
+            'uuid' => '00000000-2222-5555-9999-aaaaaaaaaaaa'
+        ];
+
+        $result = $obj::create($data);
+        $this->assertEquals(101, $result->int);
+        $this->assertEquals('_text_', $result->string);
+        $this->assertEquals('2000-01-01T00:00:00+00:00', $result->datetime->format(\DateTime::RFC3339));
+        $this->assertEquals('00000000-2222-5555-9999-aaaaaaaaaaaa', $result->uuid->toString());
+    }
+
+    /**
+     * Test SerializableTrait::create() when a field does not exist
+     */
+    public function testCreateWhenFieldDoesNotExist()
+    {
+        $this->expectException(SerializableException::class);
+
+        $obj = new class implements Serializable {
+            use SerializableTrait;
+            public $int;
+            public $string;
+        };
+
+        $data = [
+            'invalidProperty' => 1001
+        ];
+
+        $obj::create($data);
     }
 }
