@@ -142,7 +142,7 @@ class AutoUnserializeHelper
         $result = [];
         $baseObj = reset($baseArray);
         foreach ($valuesArray as $key => $subvalue) {
-            if (null === $baseObj) {
+            if (false === $baseObj) {
                 $result[$key] = $subvalue;
             } else {
                 $result[$key] = static::getNewPropertyValue($baseObj, $subvalue);
