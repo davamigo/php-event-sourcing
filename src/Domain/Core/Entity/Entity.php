@@ -8,7 +8,7 @@ use Davamigo\Domain\Core\Uuid\Uuid;
 /**
  * Interface for an entity - Every entity has an uuid.
  *
- * @package Davamigo\Domain\Core
+ * @package Davamigo\Domain\Core\Entity
  * @author davamigo@gmail.com
  */
 interface Entity extends Serializable
