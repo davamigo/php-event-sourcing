@@ -27,14 +27,14 @@ interface Message extends Serializable
     public function uuid() : Uuid;
 
     /**
-     * Return the type of the event
+     * Return the type of the message: command, event, ...
      *
      * @return string
      */
     public function type() : string;
 
     /**
-     * Return the name of the event
+     * Return the name of the message
      *
      * @return string
      */
@@ -48,7 +48,7 @@ interface Message extends Serializable
     public function createdAt() : \DateTime;
 
     /**
-     * Return the metadata of the event
+     * Return the metadata of the message
      *
      * @return array
      */
