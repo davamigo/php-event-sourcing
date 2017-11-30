@@ -6,7 +6,7 @@ use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Uuid\Uuid;
 
 /**
- * Interface for a message - A message is a serializable object
+ * Interface for a message. A message is a serializable object.
  *
  * @package Davamigo\Domain\Core\Message
  * @author davamigo@gmail.com
