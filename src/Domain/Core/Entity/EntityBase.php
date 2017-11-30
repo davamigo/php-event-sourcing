@@ -10,13 +10,28 @@ use Davamigo\Domain\Core\Uuid\UuidObj;
 /**
  * Abstract class for an entity object. An entity always has an uuid.
  *
- * @package Davamigo\Domain\Core
+ * @package Davamigo\Domain\Core\Entity
  * @author davamigo@gmail.com
  */
 abstract class EntityBase implements Entity
 {
     /** @var Uuid */
     private $uuid;
+
+    /**
+     * EntityBase constructor
+     *
+     * @param Uuid|string|null $uuid
+     * @throws EntityException
+     */
+    public function __construct($uuid = null)
+    {
+        try {
+            $this->uuid = UuidObj::createNewUuid($uuid);
+        } catch (UuidException $exc) {
+            throw new EntityException($exc->getMessage(), 0, $exc);
+        }
+    }
 
     /**
      * Return the Uuid of the entity
@@ -27,42 +42,4 @@ abstract class EntityBase implements Entity
     {
         return $this->uuid;
     }
-
-    /**
-     * EntityObj constructor
-     *
-     * @param Uuid|string|null $uuid
-     * @throws EntityException
-     */
-    public function __construct($uuid = null)
-    {
-        if (null === $uuid) {
-            $this->uuid = UuidObj::create();
-        } elseif (is_string($uuid)) {
-            try {
-                $this->uuid = UuidObj::fromString($uuid);
-            } catch (UuidException $exc) {
-                throw new EntityException('Error paring an UUID: ' . $uuid, 0, $exc);
-            }
-        } elseif (!$uuid instanceof Uuid) {
-            throw new EntityException('Invalid UUID received: ' . get_class($uuid));
-        } else {
-            $this->uuid = $uuid;
-        }
-    }
-
-    /**
-     * Creates a serializable object from an array
-     *
-     * @param array $data
-     * @return Serializable
-     */
-    abstract public static function create(array $data) : Serializable;
-
-    /**
-     * Serializes the object to an array
-     *
-     * @return array
-     */
-    abstract public function serialize() : array;
 }

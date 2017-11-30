@@ -30,13 +30,10 @@ class Book extends BaseBook
         \DateTime $releaseDate = null,
         array $authors = []
     ) {
-        parent::__construct(
-            $uuid,
-            $name,
-            $publisher ?: new Publisher(),
-            $releaseDate  ?: new \DateTime(),
-            !empty($authors) ? $authors : [ new Author() ]
-        );
+        $publisher = $publisher ?: new Publisher();
+        $releaseDate = $releaseDate ?: new \DateTime();
+        $authors = !empty($authors) ? $authors : [ new Author() ];
+        parent::__construct($uuid, $name, $publisher, $releaseDate, $authors);
     }
 
     /**

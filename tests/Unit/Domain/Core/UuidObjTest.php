@@ -61,6 +61,80 @@ class UuidObjTest extends TestCase
         $uuid = UuidObj::create();
         $str = $uuid->toString();
 
-        $this->assertRegExp('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i', $str);
+        $this->assertRegExp($this->getUuidRegExp(), $str);
+    }
+
+    /**
+     * Test createNewUuid without params
+     */
+    public function testCreateNewUuidWithouParams()
+    {
+        $uuid = UuidObj::createNewUuid();
+
+        $this->assertRegExp($this->getUuidRegExp(), $uuid->toString());
+    }
+
+    /**
+     * Test createNewUuid copying from another Uuid
+     */
+    public function testCreateNewUuidCopyingFromAnotherUuid()
+    {
+        $uuid1 = UuidObj::create();
+        $uuid2 = UuidObj::createNewUuid($uuid1);
+
+        $this->assertNotSame($uuid1, $uuid2);
+        $this->assertEquals($uuid1->toString(), $uuid2->toString());
+    }
+
+    /**
+     * Test createNewUuid copying from a string
+     */
+    public function testCreateNewUuidCopyingFromAString()
+    {
+        $str = '64a5f5c8-8fa9-4cf2-b39b-d462e5f663c1';
+        $uuid = UuidObj::createNewUuid($str);
+
+        $this->assertEquals($str, $uuid->toString());
+    }
+
+    /**
+     * Test createNewUuid from invalid string throws an exception
+     */
+    public function testCreateNewUuidFromInvalidStringThrowsAnException()
+    {
+        $this->expectException(UuidException::class);
+
+        $str = '_something_';
+        UuidObj::createNewUuid($str);
+    }
+
+    /**
+     * Test createNewUuid copying from invalid scalar value throws an exception
+     */
+    public function testCreateNewUuidFromInvalidScalarValueThrowsAnException()
+    {
+        $this->expectException(UuidException::class);
+
+        UuidObj::createNewUuid(15);
+    }
+
+    /**
+     * Test createNewUuid copying from invalid object throws an exception
+     */
+    public function testCreateNewUuidFromInvalidObjectThrowsAnException()
+    {
+        $this->expectException(UuidException::class);
+
+        UuidObj::createNewUuid(new \DateTime());
+    }
+
+    /**
+     * Get the regular expression to test an UUID
+     *
+     * @return string
+     */
+    private function getUuidRegExp()
+    {
+        return '/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i';
     }
 }

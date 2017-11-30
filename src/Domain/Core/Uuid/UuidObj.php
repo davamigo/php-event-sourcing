@@ -9,7 +9,7 @@ use Ramsey\Uuid\UuidInterface as RamseyUuidInterface;
 /**
  * Class to manage Uuids (Universal User Id)
  *
- * @package Davamigo\Domain\Core
+ * @package Davamigo\Domain\Core\Uuid
  * @author davamigo@gmail.com
  */
 class UuidObj implements Uuid
@@ -52,6 +52,37 @@ class UuidObj implements Uuid
         } catch (InvalidUuidStringException $exc) {
             throw new UuidException('Invalid UUID string: ' . $str, 0, $exc);
         }
+    }
+
+    /**
+     * Creates a new Uuid from a source data
+     *
+     * @param Uuid|string|null $source
+     * @return Uuid
+     * @throws UuidException
+     */
+    public static function createNewUuid($source = null)
+    {
+        $result = null;
+
+        if (null === $source) {
+            $result = self::create();
+        }
+
+        if ($source instanceof Uuid) {
+            $result = clone $source;
+        }
+
+        if (is_string($source)) {
+            $result = UuidObj::fromString($source);
+        }
+
+        if (null !== $result) {
+            return $result;
+        }
+
+        $type = is_scalar($source) ? gettype($source) : get_class($source);
+        throw new UuidException('Invalid source data received: ' . $type);
     }
 
     /**

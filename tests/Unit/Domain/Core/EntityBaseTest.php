@@ -9,22 +9,22 @@ use Davamigo\Domain\Core\Uuid\UuidObj;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Test of class Davamigo\Domain\Core\Entity\EntityObj
+ * Test of class Davamigo\Domain\Core\Entity\EntityBase
  *
  * @package Test\Unit\Domain\Core
  * @author davamigo@gmail.com
  *
- * @group Test_Unit_Domain_Core_EntityObj
+ * @group Test_Unit_Domain_Core_EntityBase
  * @group Test_Unit_Domain_Core
  * @group Test_Unit_Domain
  * @group Test_Unit
  * @group Test
  * @test
  */
-class EntityObjTest extends TestCase
+class EntityBaseTest extends TestCase
 {
     /**
-     * Test empty constructor of EntityObj
+     * Test empty constructor of EntityBase
      */
     public function testEmptyConstructor()
     {
@@ -37,7 +37,7 @@ class EntityObjTest extends TestCase
     }
 
     /**
-     * Test constructor of EntityObj when an UUID provided
+     * Test constructor of EntityBase when an UUID provided
      */
     public function testConstructorWhenUuidProvided()
     {
@@ -50,7 +50,7 @@ class EntityObjTest extends TestCase
     }
 
     /**
-     * Test constructor of EntityObj with a string representing an UUID provided
+     * Test constructor of EntityBase with a string representing an UUID provided
      */
     public function testConstructorWhenStringProvided()
     {
@@ -63,7 +63,7 @@ class EntityObjTest extends TestCase
     }
 
     /**
-     * Test constructor of EntityObj when an invalid string provided
+     * Test constructor of EntityBase when an invalid string provided
      */
     public function testConstructorWhenInvalidStringProvided()
     {
@@ -75,7 +75,7 @@ class EntityObjTest extends TestCase
     }
 
     /**
-     * Test constructor of EntityObj when an invalid object provided
+     * Test constructor of EntityBase when an invalid object provided
      */
     public function testConstructorWhenInvalidObjectProvided()
     {
@@ -85,7 +85,7 @@ class EntityObjTest extends TestCase
     }
 
     /**
-     * Creates an entity using the mock builder because EntityObj is an abstract class
+     * Creates an entity using the mock builder because EntityBase is an abstract class
      *
      * @param \Davamigo\Domain\Core\Uuid\Uuid|string|null $uuid
      * @return \Davamigo\Domain\Core\Entity\EntityBase|\PHPUnit_Framework_MockObject_MockObject
