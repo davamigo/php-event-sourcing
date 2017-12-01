@@ -11,10 +11,11 @@ namespace Davamigo\Domain\Core\Command;
 interface CommandHandler
 {
     /**
-     * Handles a command
+     * Handles a command.
      *
      * @param Command $command
      * @return void
+     * @throws CommandHandlerException
      */
     public function handle(Command $command) : void;
 }

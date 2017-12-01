@@ -39,6 +39,7 @@ class CommandBaseTest extends TestCase
         $this->assertEquals('command', $command->type());
         $this->assertEquals('command_name', $command->name());
         $this->assertEquals($entity, $command->payload());
+        $this->assertNull($command->commandHandlers());
         $this->assertInstanceOf(Uuid::class, $command->uuid());
         $this->assertInstanceOf(\DateTime::class, $command->createdAt());
         $this->assertInternalType('array', $command->metadata());
@@ -80,6 +81,48 @@ class CommandBaseTest extends TestCase
         };
 
         $this->createCommand('', $serializable);
+    }
+
+    /**
+     * Test constructor of CommandBase class throws an exception when no name
+     */
+    public function testGetSingleCommandHandler()
+    {
+        $serializable = new class implements Serializable {
+            use SerializableTrait;
+        };
+
+        $command = new class(self::class, $serializable) extends CommandBase {
+            public function commandHandlers()
+            {
+                return '_a_command_handler_';
+            }
+            use SerializableTrait;
+        };
+
+        $handlers = $command->commandHandlers();
+        $this->assertEquals('_a_command_handler_', $handlers);
+    }
+
+    /**
+     * Test constructor of CommandBase class throws an exception when no name
+     */
+    public function testGetMultipleCommandHandler()
+    {
+        $serializable = new class implements Serializable {
+            use SerializableTrait;
+        };
+
+        $command = new class(self::class, $serializable) extends CommandBase {
+            public function commandHandlers()
+            {
+                return [ '_handler_1_', '_handler_2_' ];
+            }
+            use SerializableTrait;
+        };
+
+        $handlers = $command->commandHandlers();
+        $this->assertEquals([ '_handler_1_', '_handler_2_' ], $handlers);
     }
 
     /**

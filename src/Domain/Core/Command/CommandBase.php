@@ -53,4 +53,15 @@ abstract class CommandBase extends MessageBase implements Command
     {
         return $this->payload;
     }
+
+    /**
+     * Return the command handler class names for this command. For example: 'Samples\Domain\Command\CreateAutor' or
+     * [ CreateAuthorInsert::class, CreateAuthorSendMail::class ]
+     *
+     * @return string[]|string|null
+     */
+    public function commandHandlers()
+    {
+        return null;
+    }
 }
