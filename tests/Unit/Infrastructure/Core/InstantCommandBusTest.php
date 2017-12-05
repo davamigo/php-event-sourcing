@@ -1,28 +1,28 @@
 <?php
 
-namespace Test\Unit\Domain\Core;
+namespace Test\Unit\Infrastructure\Core;
 
 use Davamigo\Domain\Core\Command\Command;
 use Davamigo\Domain\Core\Command\CommandBase;
 use Davamigo\Domain\Core\Command\CommandBusException;
 use Davamigo\Domain\Core\Command\CommandHandler;
 use Davamigo\Domain\Core\Command\CommandHandlerException;
-use Davamigo\Domain\Core\Command\InstantCommandBus;
+use Davamigo\Infrastructure\Core\Command\InstantCommandBus;
 use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Serializable\SerializableTrait;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
 /**
- * Test of class Davamigo\Domain\Core\Command\InstantCommandBus
+ * Test of class Davamigo\Infrastructure\Core\Command\InstantCommandBus
  *
- * @package Test\Unit\Domain\Core
+ * @package Test\Unit\Infrastructure\Core
  * @author davamigo@gmail.com
  *
- * @group Test_Unit_Domain_Core_CommandBus_Instant
- * @group Test_Unit_Domain_Core_CommandBus
- * @group Test_Unit_Domain_Core
- * @group Test_Unit_Domain
+ * @group Test_Unit_Infrastructure_Core_CommandBus_Instant
+ * @group Test_Unit_Infrastructure_Core_CommandBus
+ * @group Test_Unit_Infrastructure_Core
+ * @group Test_Unit_Infrastructure
  * @group Test_Unit
  * @group Test
  * @test

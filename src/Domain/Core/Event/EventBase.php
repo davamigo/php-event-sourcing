@@ -17,7 +17,7 @@ use Davamigo\Domain\Core\Uuid\Uuid;
 abstract class EventBase extends MessageBase implements Event
 {
     /** @var Serializable */
-    private $payload;
+    protected $payload;
 
     /**
      * EventBase constructor.
@@ -31,10 +31,15 @@ abstract class EventBase extends MessageBase implements Event
     public function __construct(
         string $name,
         Serializable $payload,
+        string $topic = null,
+        string $routingKey = null,
         $uuid = null,
         \DateTime $createdAt = null,
         array $metadata = []
     ) {
+        $metadata['topic'] = $topic;
+        $metadata['routingKey'] = $routingKey;
+
         try {
             parent::__construct(Message::TYPE_EVENT, $name, $uuid, $createdAt, $metadata);
         } catch (MessageException $exc) {
@@ -45,12 +50,32 @@ abstract class EventBase extends MessageBase implements Event
     }
 
     /**
-     * Return the payload of the event
+     * Returns the payload of the event which is a serializable object.
      *
      * @return Serializable
      */
     public function payload()
     {
         return $this->payload;
+    }
+
+    /**
+     * Returns the topic of the event. Usually the name of the queue.
+     *
+     * @return string|null
+     */
+    public function topic()
+    {
+        return $this->metadata['topic'] ?? null;
+    }
+
+    /**
+     * Returns the optional routing Key of the event (used to enroute the event  to the right queue).
+     *
+     * @return string|null
+     */
+    public function routingKey()
+    {
+        return $this->metadata['routingKey'] ?? null;
     }
 }

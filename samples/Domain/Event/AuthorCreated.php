@@ -26,13 +26,15 @@ class AuthorCreated extends EventBase
      */
     public function __construct(
         AuthorBase $author = null,
+        $topic = null,
+        $routingKey = null,
         $uuid = null,
         \DateTime $createdAt = null,
         array $metadata = []
     ) {
         $name = self::class;
         $author = $author ?: new AuthorCustom();
-        parent::__construct($name, $author, $uuid, $createdAt, $metadata);
+        parent::__construct($name, $author, $topic, $routingKey, $uuid, $createdAt, $metadata);
     }
 
     /**

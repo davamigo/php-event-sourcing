@@ -46,6 +46,19 @@ class AuthorCreatedTest extends TestCase
     }
 
     /**
+     * Test advanced constructor of AuthorCreated event
+     */
+    public function testAdvancedConstructor()
+    {
+        $author = new AuthorCustom();
+        $event = new AuthorCreated($author, 'the_topic', 'the_routing_key');
+
+        $this->assertEquals($author, $event->payload());
+        $this->assertEquals('the_topic', $event->topic());
+        $this->assertEquals('the_routing_key', $event->routingKey());
+    }
+
+    /**
      * Test serialize of AuthorCreated event
      */
     public function testSerialize()
@@ -58,23 +71,25 @@ class AuthorCreatedTest extends TestCase
 
         $event = new AuthorCreated(
             $author,
+            AuthorBase::class,
+            'insert',
             '6d0350c9-888c-4234-8410-afc516cd82a0',
-            \DateTime::createFromFormat('YmdHis', '20100102100001'),
-            [ 'routing_key' => AuthorCreated::class ]
+            \DateTime::createFromFormat('YmdHis', '20100102100001')
         );
 
         $expected = [
-            'uuid'      => '6d0350c9-888c-4234-8410-afc516cd82a0',
-            'type'      => 'event',
-            'name'      => AuthorCreated::class,
-            'createdAt' => '2010-01-02T10:00:01+00:00',
-            'payload'   => [
-                'uuid'      => '068332f0-9465-47c4-a7c2-402e9ccabfdc',
-                'firstName' => 'author_first_name',
-                'lastName'  => 'author_last_name'
+            'uuid'          => '6d0350c9-888c-4234-8410-afc516cd82a0',
+            'type'          => 'event',
+            'name'          => AuthorCreated::class,
+            'createdAt'     => '2010-01-02T10:00:01+00:00',
+            'payload'       => [
+                'uuid'          => '068332f0-9465-47c4-a7c2-402e9ccabfdc',
+                'firstName'     => 'author_first_name',
+                'lastName'      => 'author_last_name'
             ],
-            'metadata'  => [
-                'routing_key' => AuthorCreated::class
+            'metadata'      => [
+                'topic'         => AuthorBase::class,
+                'routingKey'    => 'insert'
             ]
         ];
 
@@ -89,18 +104,20 @@ class AuthorCreatedTest extends TestCase
     public function testCreate()
     {
         $data = [
-            'uuid'      => '910fde66-84f7-46f2-83aa-eded2dbd593b',
-            'type'      => 'event',
-            'name'      => AuthorCreated::class,
-            'createdAt' => '2004-02-04T09:00:00+00:00',
-            'payload'   => [
-                'uuid'      => '8b171bf9-f84a-474d-8bb1-0e0e8d988ef7',
-                'firstName' => 'J.R.R',
-                'lastName'  => 'Tolkien'
+            'uuid'          => '910fde66-84f7-46f2-83aa-eded2dbd593b',
+            'type'          => 'event',
+            'name'          => AuthorCreated::class,
+            'createdAt'     => '2004-02-04T09:00:00+00:00',
+            'payload'       => [
+                'uuid'          => '8b171bf9-f84a-474d-8bb1-0e0e8d988ef7',
+                'firstName'     => 'J.R.R',
+                'lastName'      => 'Tolkien'
             ],
-            'metadata'  => [
-                'entity_class' => AuthorCustom::class,
-                'event_class'  => AuthorCreated::class
+            'metadata'      => [
+                'entityClass'   => AuthorCustom::class,
+                'eventClass'    => AuthorCreated::class,
+                'topic'         => AuthorBase::class,
+                'routingKey'    => 'insert'
             ]
         ];
 
@@ -118,9 +135,13 @@ class AuthorCreatedTest extends TestCase
         $this->assertEquals('J.R.R', $entity->firstName());
         $this->assertEquals('Tolkien', $entity->lastName());
 
-        $metadata = $event->metadata();
-        $this->assertCount(2, $metadata);
-        $this->assertEquals(['entity_class', 'event_class'], array_keys($metadata));
-        $this->assertEquals([AuthorCustom::class, AuthorCreated::class], array_values($metadata));
+        $expected = [
+            'entityClass'   => AuthorCustom::class,
+            'eventClass'    => AuthorCreated::class,
+            'topic'         => AuthorBase::class,
+            'routingKey'    => 'insert'
+        ];
+
+        $this->assertEquals($expected, $event->metadata());
     }
 }

@@ -18,9 +18,23 @@ use Davamigo\Domain\Core\Serializable\Serializable;
 interface Event extends Message
 {
     /**
-     * Return the payload of the event
+     * Returns the payload of the event which is a serializable object.
      *
      * @return Serializable
      */
     public function payload();
+
+    /**
+     * Returns the topic of the event. Usually the name of the queue.
+     *
+     * @return string|null
+     */
+    public function topic();
+
+    /**
+     * Returns the optional routing Key of the event (used to enroute the event  to the right queue).
+     *
+     * @return string|null
+     */
+    public function routingKey();
 }

@@ -1,13 +1,18 @@
 <?php
 
-namespace Davamigo\Domain\Core\Command;
+namespace Davamigo\Infrastructure\Core\Command;
 
+use Davamigo\Domain\Core\Command\Command;
+use Davamigo\Domain\Core\Command\CommandBus;
+use Davamigo\Domain\Core\Command\CommandBusException;
+use Davamigo\Domain\Core\Command\CommandHandler;
+use Davamigo\Domain\Core\Command\CommandHandlerException;
 use Psr\Log\LoggerInterface;
 
 /**
  * Simple instant command bus.
  *
- * @package Davamigo\Domain\Core\Command
+ * @package Davamigo\Infrastructure\Core\Command
  * @author davamigo@gmail.com
  */
 class InstantCommandBus implements CommandBus
@@ -40,9 +45,10 @@ class InstantCommandBus implements CommandBus
     /**
      * Adds a handler to the command bus.
      *
-     * @param string         $name
-     * @param CommandHandler $handler
+     * @param string         $name    The name of the handler. Usually the full name of the class.
+     * @param CommandHandler $handler The handler of the command with it's dependencies solved.
      * @return $this
+     * @throws CommandBusException
      */
     public function addHandler(string $name, CommandHandler $handler)
     {
@@ -133,7 +139,6 @@ class InstantCommandBus implements CommandBus
      *
      * @param string $message
      * @param array  $context
-     *
      * @return void
      */
     protected function notice($message, array $context = array())
@@ -148,7 +153,6 @@ class InstantCommandBus implements CommandBus
      *
      * @param string $message
      * @param array  $context
-     *
      * @return void
      */
     protected function info($message, array $context = array())
@@ -163,7 +167,6 @@ class InstantCommandBus implements CommandBus
      *
      * @param string $message
      * @param array  $context
-     *
      * @return void
      */
     protected function error($message, array $context = array())

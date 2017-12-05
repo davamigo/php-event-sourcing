@@ -16,19 +16,19 @@ use Davamigo\Domain\Core\Uuid\UuidObj;
 abstract class MessageBase implements Message
 {
     /** @var Uuid */
-    private $uuid;
+    protected $uuid;
 
     /** @var string */
-    private $type;
+    protected $type;
 
     /** @var string */
-    private $name;
+    protected $name;
 
     /** @var \DateTime */
-    private $createdAt;
+    protected $createdAt;
 
     /** @var array */
-    private $metadata;
+    protected $metadata;
 
     /**
      * MessageBase constructor.
