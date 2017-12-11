@@ -90,6 +90,90 @@ class MessageBaseTest extends TestCase
     }
 
     /**
+     * Test addMetadata with key/value
+     */
+    public function testAddMetadataKeyValue()
+    {
+        $message = $this->createMessage('command', 'message');
+        $message->addMetadata([
+            'key1' => 'val1',
+            'key2' => 'val2'
+        ]);
+
+        $expected = [
+            'key2' => 'val2',
+            'key1' => 'val1'
+        ];
+
+        $this->assertEquals($expected, $message->metadata());
+    }
+
+    /**
+     * Test addMetadata with array values
+     */
+    public function testAddMetadataArrayValues()
+    {
+        $message = $this->createMessage('command', 'message');
+        $message->addMetadata([
+            'value1',
+            'value2'
+        ]);
+
+        $expected = [
+            'value1',
+            'value2'
+        ];
+
+        $this->assertEquals($expected, $message->metadata());
+    }
+
+    /**
+     * Test addMetadata with new key/value
+     */
+    public function testAddMetadataNewKeyValues()
+    {
+        $initialMetadata = [
+            'v1' => 11,
+            'v2' => 12
+        ];
+
+        $addedMetadata = [
+            'v2' => 22,
+            'v3' => 23
+        ];
+
+        $expected = [
+            'v1' => 11,
+            'v2' => 22,
+            'v3' => 23
+        ];
+
+        $message = $this->createMessage('command', 'message', null, null, $initialMetadata);
+
+        $message->addMetadata($addedMetadata);
+
+        $this->assertEquals($expected, $message->metadata());
+    }
+
+    /**
+     * Test addMetadata with new array values
+     */
+    public function testAddMetadataNewArrayValues()
+    {
+        $initialMetadata = [ 11, 12 ];
+
+        $addedMetadata = [ 12, 13 ];
+
+        $expected = [ 11, 12, 12, 13 ];
+
+        $message = $this->createMessage('command', 'message', null, null, $initialMetadata);
+
+        $message->addMetadata($addedMetadata);
+
+        $this->assertEquals($expected, $message->metadata());
+    }
+
+    /**
      * Returns a new MessageBase object
      *
      * @param $type

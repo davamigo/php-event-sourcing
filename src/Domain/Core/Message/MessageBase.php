@@ -116,4 +116,22 @@ abstract class MessageBase implements Message
     {
         return $this->metadata;
     }
+
+    /**
+     * Add metadata to the event
+     *
+     * @param array $metadata
+     * @return MessageBase
+     */
+    public function addMetadata(array $metadata): MessageBase
+    {
+        foreach ($metadata as $key => $value) {
+            if (is_numeric($key)) {
+                $this->metadata[] = $value;
+            } else {
+                $this->metadata[$key] = $value;
+            }
+        }
+        return $this;
+    }
 }

@@ -5,11 +5,11 @@ namespace Davamigo\Domain\Core\Event;
 use Davamigo\Domain\Core\CoreException;
 
 /**
- * Exception for Event bus classes
+ * Exception for Event consumer classes
  *
  * @package Davamigo\Domain\Core\Event
  * @author davamigo@gmail.com
  */
-class EventBusException extends CoreException
+class EventConsumerException extends CoreException
 {
 }

@@ -12,9 +12,11 @@ use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class AmqpEventBus
+ * Event bus implementation using AMQP (Advanced Message Queuing Protocol) which works with many queuing systems such
+ * as RabbitMQ, Apache ActiveMQ and Apache Qpid.
  *
  * @package Davamigo\Infrastructure\Core\Event
+ * @author davamigo@gmail.com
  */
 class AmqpEventBus implements EventBus
 {
@@ -52,10 +54,11 @@ class AmqpEventBus implements EventBus
      *
      * Overwrite it to configure the actual resources.
      *
-     * @return void
+     * @return $this
      */
-    public function configureResources()
+    public function configureResources() : EventBus
     {
+        return $this;
     }
 
     /**
@@ -92,17 +95,15 @@ class AmqpEventBus implements EventBus
             // Close the communications channel
             $this->closeChannel($channel);
         } catch (AMQPExceptionInterface $exc) {
-            throw new EventBusException('EventBus - Error publishing an event to the AMQP queue system.', 0, $exc);
+            throw new EventBusException('EventBusException - Error publishing an event to AMQP queue system.', 0, $exc);
         }
 
-        if (null !== $this->logger) {
-            $this->logger->info(
-                'EventBus - Event published. ' .
-                'resource "' . $resource . '". ' .
-                'routingKey "' . $routingKey . '". ' .
-                'rawData: "' . $message->getBody() .'".'
-            );
-        }
+        $this->logger->info(
+            'EventBus - Event published. ' .
+            'resource: ' . $resource . '. ' .
+            'routing-key: ' . $routingKey . '. ' .
+            'raw-daata: ' . $message->getBody() .'.'
+        );
 
         return $this;
     }
