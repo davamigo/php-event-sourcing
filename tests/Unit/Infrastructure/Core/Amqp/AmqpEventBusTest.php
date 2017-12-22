@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Unit\Infrastructure\Core;
+namespace Test\Unit\Infrastructure\Core\Amqp;
 
 use Davamigo\Domain\Core\Event\EventBase;
 use Davamigo\Domain\Core\Event\EventBusException;
@@ -11,14 +11,12 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPIOException;
 use PhpAmqpLib\Message\AMQPMessage;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
 /**
- * Class AmqpEventBusTest
+ * Test of class AmqpEventBus
  *
- * @package Test\Unit\Infrastructure\Core
+ * @package Test\Unit\Infrastructure\Core\Amqp
  * @author davamigo@gmail.com
  *
  * @group Test_Unit_Infrastructure_Core_EventBus_Amqp
@@ -29,7 +27,7 @@ use Psr\Log\NullLogger;
  * @group Test
  * @test
  */
-class AmqpEventBusTest extends TestCase
+class AmqpEventBusTest extends AmqpTestCase
 {
     /**
      * Test publishEvent()
@@ -105,14 +103,13 @@ class AmqpEventBusTest extends TestCase
         // Run test
         $eventBus->publishEvent($event);
     }
+
     /**
      * Test publishEvent()
      */
     public function testPublishEventWhenAmqpException()
     {
         $connectionMock = $this->createConnectionMock();
-
-        $channelMock = $this->createChannelMock();
 
         $connectionMock
             ->expects($this->once())
@@ -400,49 +397,5 @@ class AmqpEventBusTest extends TestCase
 
         // Run test
         $this->callPrivateMethod($eventBus, 'commitTransaction', [ $channel ]);
-    }
-
-    /**
-     * Create connection mock object
-     *
-     * @return MockObject
-     */
-    private function createConnectionMock()
-    {
-        return $this
-            ->getMockBuilder(AMQPStreamConnection::class)
-            ->disableOriginalConstructor()
-            ->setMethods([ 'channel' ])
-            ->getMock();
-    }
-
-    /**
-     * Create channel mock object
-     *
-     * @return MockObject
-     */
-    private function createChannelMock()
-    {
-        return $this
-            ->getMockBuilder(AMQPChannel::class)
-            ->disableOriginalConstructor()
-            ->setMethods([ 'close', 'basic_publish', 'tx_select', 'tx_commit' ])
-            ->getMock();
-    }
-
-    /**
-     * Call private method
-     *
-     * @param object $object
-     * @param string $method
-     * @param array $args
-     * @return mixed
-     */
-    private function callPrivateMethod($object, string $method, array $args = [])
-    {
-        $reflectionClass = new \ReflectionClass($object);
-        $reflectionMethod = $reflectionClass->getMethod($method);
-        $reflectionMethod->setAccessible(true);
-        return $reflectionMethod->invokeArgs($object, $args);
     }
 }

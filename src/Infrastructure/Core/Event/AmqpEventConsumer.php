@@ -70,6 +70,7 @@ class AmqpEventConsumer implements EventConsumer
     /**
      * Constant: Default timeout for wait to messages (seconds)
      */
+    const OPTION_WAIT_TIMEOUT = 'wait_timeout';
     const DEFAULT_WAIT_TIMEOUT = 3600;
 
     /**
@@ -83,6 +84,7 @@ class AmqpEventConsumer implements EventConsumer
     /**
      * Constant: Default restart attempts
      */
+    const OPTION_RESTART_ATTEMPTS = 'restart_attempts';
     const DEFAULT_RESTART_ATTEMPTS = 5;
 
     /**
@@ -96,6 +98,7 @@ class AmqpEventConsumer implements EventConsumer
     /**
      * Constant: Default restart wait time in seconds
      */
+    const OPTION_RESTART_WAIT_TIME = 'restart_wait_time';
     const DEFAULT_RESTART_WAIT_TIME = 15;
 
     /**
@@ -221,16 +224,16 @@ class AmqpEventConsumer implements EventConsumer
             $eventName = null;
             $eventClass = null;
 
-            if (is_string($event) && class_exists($event) && is_a($event, Event::class)) {
+            if (is_string($event) && class_exists($event) && is_subclass_of($event, Event::class)) {
                 $eventClass = $event;
-            } elseif (is_object($event) && is_a($event, Event::class)) {
+            } elseif (is_object($event) && is_subclass_of($event, Event::class)) {
                 $eventClass = get_class($event);
             } else {
                 $type = is_object($event) ? get_class($event) : gettype($event);
                 throw new EventConsumerException('EventConsumer error: ' . $type . ' is not a valid event class!');
             }
 
-            if (is_nan($name)) {
+            if (!is_numeric($name)) {
                 $eventName = $name;
             } else {
                 $eventName = $eventClass;
@@ -249,9 +252,9 @@ class AmqpEventConsumer implements EventConsumer
      */
     protected function readOptions(array $options) : EventConsumer
     {
-        $this->waitTimeout = $options['wait_timeout'] ?? self::DEFAULT_WAIT_TIMEOUT;
-        $this->restartAttempts = $options['restart_attempts'] ?? self::DEFAULT_RESTART_ATTEMPTS;
-        $this->restartWaitTime = $options['restart_wait_time'] ?? self::DEFAULT_RESTART_WAIT_TIME;
+        $this->waitTimeout = $options[self::OPTION_WAIT_TIMEOUT] ?? self::DEFAULT_WAIT_TIMEOUT;
+        $this->restartAttempts = $options[self::OPTION_RESTART_ATTEMPTS] ?? self::DEFAULT_RESTART_ATTEMPTS;
+        $this->restartWaitTime = $options[self::OPTION_RESTART_WAIT_TIME] ?? self::DEFAULT_RESTART_WAIT_TIME;
         return $this;
     }
 
@@ -272,15 +275,7 @@ class AmqpEventConsumer implements EventConsumer
             $channel->basic_qos(null, 1, null);
 
             // Tell the server to deliver us the messages from the queue.
-            $channel->basic_consume(
-                $resource,
-                '',
-                false,
-                false,
-                false,
-                false,
-                array($this, 'eventReceivedCallback')
-            );
+            $channel->basic_consume($resource, '', false, false, false, false, array($this, 'eventReceivedCallback'));
         } catch (AMQPExceptionInterface $exc) {
             $msg = 'EventConsumer error - Can not connect to a queue ' . $resource . '!';
             throw new EventConsumerException($msg, 0, $exc);
