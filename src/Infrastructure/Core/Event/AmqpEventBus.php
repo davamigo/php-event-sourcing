@@ -21,7 +21,7 @@ use Psr\Log\LoggerInterface;
 class AmqpEventBus implements EventBus
 {
     /**
-     * The AMQP connection
+     * The connection object with AMQL queue system
      *
      * @var AMQPStreamConnection
      */

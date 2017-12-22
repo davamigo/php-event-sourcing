@@ -2,7 +2,6 @@
 
 namespace Davamigo\Domain\Core\Message;
 
-use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Uuid\Uuid;
 use Davamigo\Domain\Core\Uuid\UuidException;
 use Davamigo\Domain\Core\Uuid\UuidObj;
@@ -36,7 +35,7 @@ abstract class MessageBase implements Message
      * @param string           $type
      * @param string           $name
      * @param Uuid|string|null $uuid
-     * @param \DateTime        $createdAt
+     * @param \DateTime|null   $createdAt
      * @param array            $metadata
      * @throws MessageException
      */
@@ -48,11 +47,11 @@ abstract class MessageBase implements Message
         array $metadata = []
     ) {
         if (empty($type)) {
-            throw new MessageException('A message has to have a type.');
+            throw new MessageException('The message has to have a type.');
         }
 
         if (empty($name)) {
-            throw new MessageException('A message has to have a name.');
+            throw new MessageException('The message has to have a name.');
         }
 
         try {

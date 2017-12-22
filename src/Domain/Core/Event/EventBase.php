@@ -24,8 +24,10 @@ abstract class EventBase extends MessageBase implements Event
      *
      * @param string           $name
      * @param Serializable     $payload,
+     * @param string|null      $topic
+     * @param string|null      $routingKey
      * @param Uuid|string|null $uuid
-     * @param \DateTime        $createdAt
+     * @param \DateTime|null   $createdAt
      * @param array            $metadata
      */
     public function __construct(

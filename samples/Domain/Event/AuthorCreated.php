@@ -19,9 +19,11 @@ class AuthorCreated extends EventBase
     /**
      * AuthorCreated constructor.
      *
-     * @param AuthorBase|null $author
+     * @param AuthorBase|null  $author
+     * @param string|null      $topic
+     * @param string|null      $routingKey
      * @param Uuid|string|null $uuid
-     * @param \DateTime        $createdAt
+     * @param \DateTime|null   $createdAt
      * @param array            $metadata
      */
     public function __construct(

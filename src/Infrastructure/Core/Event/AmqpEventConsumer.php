@@ -23,11 +23,18 @@ use Psr\Log\LoggerInterface;
 class AmqpEventConsumer implements EventConsumer
 {
     /**
-     * The AMQP connection
+     * The connection object with AMQL queue system
      *
      * @var AMQPStreamConnection
      */
     protected $connection = null;
+
+    /**
+     * Supported events list. $events = [ 'event_name' => 'event_class_name' ]
+     *
+     * @var array
+     */
+    protected $events = [];
 
     /**
      * The monolog object to log events
@@ -42,13 +49,6 @@ class AmqpEventConsumer implements EventConsumer
      * @var bool
      */
     private $running = false;
-
-    /**
-     * Base event object to decode the read message into an event
-     *
-     * @var Event
-     */
-    private $baseEvent = null;
 
     /**
      * Callback func to call wen new event received
@@ -74,7 +74,7 @@ class AmqpEventConsumer implements EventConsumer
 
     /**
      * Restart attempts to start consuming events after a communications error.
-     * 0 = No restart. Default: 5.
+     * 0 = No restart attemps. Default: 5.
      *
      * @var int
      */
@@ -102,16 +102,21 @@ class AmqpEventConsumer implements EventConsumer
      * AmqpEventBus constructor.
      *
      * @param AMQPStreamConnection $connection  AMQ Connection object
+     * @param Event[]              $events      List of supported events
      * @param LoggerInterface      $logger      Monolog object
      * @param array                $options     Configuration options
+     * @throws EventConsumerException
      */
     public function __construct(
         AMQPStreamConnection $connection,
+        array $events,
         LoggerInterface $logger,
         array $options = []
     ) {
         $this->connection = $connection;
+        $this->events = [];
         $this->logger = $logger;
+        $this->addSupportedEvents($events);
         $this->readOptions($options);
         $this->configureResources();
     }
@@ -122,6 +127,7 @@ class AmqpEventConsumer implements EventConsumer
      * Overwrite it to configure the actual resources.
      *
      * @return $this
+     * @throws EventConsumerException
      */
     public function configureResources() : EventConsumer
     {
@@ -131,15 +137,13 @@ class AmqpEventConsumer implements EventConsumer
     /**
      * Starts consuming events from a queue. When new event arrives the callback function is called.
      *
-     * @param string   $resource  The name of the queue to consume.
-     * @param Event    $baseEvent The base event object to unserialize the event data.
-     * @param callable $callback  Callback func to call wen new event received.
+     * @param string   $resource  The name of the queue to consume
+     * @param callable $callback  Callback func to call wen new event received
      * @return $this
      * @throws EventConsumerException
      */
-    public function start($resource, Event $baseEvent, callable $callback) : EventConsumer
+    public function start($resource, callable $callback) : EventConsumer
     {
-        $this->baseEvent = $baseEvent;
         $this->callback = $callback;
 
         // Prepare AMQP system to receive events
@@ -199,10 +203,49 @@ class AmqpEventConsumer implements EventConsumer
     }
 
     /**
+     * Adds new events to the supported events list
+     *
+     * The $event parameter can be:
+     * $events = [ Event ]
+     * $events = [ 'event_class_name' ]
+     * $events = [ 'event_name' => Event ]
+     * $events = [ 'event_name' => 'event_clas_name' ]
+     *
+     * @param array $events Supported events list
+     * @return void
+     * @throws EventConsumerException
+     */
+    public function addSupportedEvents(array $events) : void
+    {
+        foreach ($events as $name => $event) {
+            $eventName = null;
+            $eventClass = null;
+
+            if (is_string($event) && class_exists($event) && is_a($event, Event::class)) {
+                $eventClass = $event;
+            } elseif (is_object($event) && is_a($event, Event::class)) {
+                $eventClass = get_class($event);
+            } else {
+                $type = is_object($event) ? get_class($event) : gettype($event);
+                throw new EventConsumerException('EventConsumer error: ' . $type . ' is not a valid event class!');
+            }
+
+            if (is_nan($name)) {
+                $eventName = $name;
+            } else {
+                $eventName = $eventClass;
+            }
+
+            $this->events[$eventName] = $eventClass;
+        }
+    }
+
+    /**
      * Reads the configuration options
      *
      * @param array $options
      * @return $this
+     * @throws EventConsumerException
      */
     protected function readOptions(array $options) : EventConsumer
     {
@@ -239,7 +282,7 @@ class AmqpEventConsumer implements EventConsumer
                 array($this, 'eventReceivedCallback')
             );
         } catch (AMQPExceptionInterface $exc) {
-            $msg = 'EventConsumerException - Error connecting to a queue ' . $resource . '!';
+            $msg = 'EventConsumer error - Can not connect to a queue ' . $resource . '!';
             throw new EventConsumerException($msg, 0, $exc);
         }
 
@@ -288,25 +331,44 @@ class AmqpEventConsumer implements EventConsumer
      * @param string $jsonData The raw event data
      * @param array  $metadata The metadata of the event
      * @return Event|array
+     * @throws EventConsumerException
      */
     protected function decodeEventData(string $jsonData, array $metadata)
     {
         $data = json_decode($jsonData, true);
 
-        if (null === $this->baseEvent || !$this->baseEvent instanceof Event) {
-            return [
-                'data' => $data,
-                'metadata' => $metadata
-            ];
-        }
+        $eventClass = $this->getEventClass($data);
 
         /** @var Event $event */
-        $event = call_user_func(get_class($this->baseEvent) . '::create', $data);
+        $event = call_user_func($eventClass . '::create', $data);
         if ($event instanceof EventBase) {
             $event->addMetadata($metadata);
         }
 
         return $event;
+    }
+
+    /**
+     * Returns the event class for the received data
+     *
+     * @param array $data
+     * @return string
+     * @throws EventConsumerException
+     */
+    protected function getEventClass(array $data) : string
+    {
+        // Get event name from event data
+        if (!isset($data['name'])) {
+            throw new EventConsumerException('EventConsumer error - The event received has no name!');
+        }
+        $name = $data['name'];
+
+        // Get event class from supported events
+        if (!isset($this->events[$name])) {
+            throw new EventConsumerException('EventConsumer error - Unrecognized event!');
+        }
+
+        return $this->events[$name];
     }
 
     /**
