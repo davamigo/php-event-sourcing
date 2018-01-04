@@ -89,7 +89,7 @@ class AuthorCreatedTest extends TestCase
             ],
             'metadata'      => [
                 'topic'         => AuthorBase::class,
-                'routingKey'    => 'insert'
+                'routing_key'   => 'insert'
             ]
         ];
 
@@ -117,7 +117,7 @@ class AuthorCreatedTest extends TestCase
                 'entityClass'   => AuthorCustom::class,
                 'eventClass'    => AuthorCreated::class,
                 'topic'         => AuthorBase::class,
-                'routingKey'    => 'insert'
+                'routing_key'   => 'insert'
             ]
         ];
 
@@ -139,7 +139,7 @@ class AuthorCreatedTest extends TestCase
             'entityClass'   => AuthorCustom::class,
             'eventClass'    => AuthorCreated::class,
             'topic'         => AuthorBase::class,
-            'routingKey'    => 'insert'
+            'routing_key'   => 'insert'
         ];
 
         $this->assertEquals($expected, $event->metadata());

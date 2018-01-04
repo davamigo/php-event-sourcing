@@ -44,11 +44,11 @@ class AmqpEventConsumer implements EventConsumer
     protected $logger = null;
 
     /**
-     * Indicates if the process in started
+     * Indicates if listening events
      *
      * @var bool
      */
-    private $running = false;
+    private $listening = false;
 
     /**
      * Callback func to call wen new event received
@@ -61,43 +61,32 @@ class AmqpEventConsumer implements EventConsumer
 
     /**
      * Timeout in seconds to wait for messages until an AMQPTimeoutException is thrown.
+     * This will restart the communication with the AMPQ server to avoid broken pipes.
      * 0 = No timeout. Default: 3600 seconds (1 hour).
      *
      * @var int
      */
     private $waitTimeout = self::DEFAULT_WAIT_TIMEOUT;
-
-    /**
-     * Constant: Default timeout for wait to messages (seconds)
-     */
     const OPTION_WAIT_TIMEOUT = 'wait_timeout';
     const DEFAULT_WAIT_TIMEOUT = 3600;
 
     /**
-     * Restart attempts to start consuming events after a communications error.
+     * Restart attempts to listen events after a communications error occurred.
      * 0 = No restart attemps. Default: 5.
      *
      * @var int
      */
     private $restartAttempts = self::DEFAULT_RESTART_ATTEMPTS;
-
-    /**
-     * Constant: Default restart attempts
-     */
     const OPTION_RESTART_ATTEMPTS = 'restart_attempts';
     const DEFAULT_RESTART_ATTEMPTS = 5;
 
     /**
-     * Wait time after a failure restart (in seconds)
+     * Wait time after a failure restart (in seconds).
      * 0 = No wait. Default: 15 seconds
      *
      * @var int
      */
     private $restartWaitTime = self::DEFAULT_RESTART_WAIT_TIME;
-
-    /**
-     * Constant: Default restart wait time in seconds
-     */
     const OPTION_RESTART_WAIT_TIME = 'restart_wait_time';
     const DEFAULT_RESTART_WAIT_TIME = 15;
 
@@ -138,14 +127,14 @@ class AmqpEventConsumer implements EventConsumer
     }
 
     /**
-     * Starts consuming events from a queue. When new event arrives the callback function is called.
+     * Starts listening for events from a queue or topic.
      *
      * @param string   $resource  The name of the queue to consume
      * @param callable $callback  Callback func to call wen new event received
      * @return $this
      * @throws EventConsumerException
      */
-    public function start($resource, callable $callback) : EventConsumer
+    final public function listen($resource, callable $callback) : EventConsumer
     {
         $this->callback = $callback;
 
@@ -153,7 +142,7 @@ class AmqpEventConsumer implements EventConsumer
         $channel = $this->enableBasicConsume($resource);
 
         // While the process in running
-        while ($this->running && count($channel->callbacks)) {
+        while ($this->listening && count($channel->callbacks)) {
             $timeoutOccurred = false;
             $errorOccurred = false;
 
@@ -195,13 +184,13 @@ class AmqpEventConsumer implements EventConsumer
     }
 
     /**
-     * Stops consuming events from a queue.
+     * Stops consuming events.
      *
      * @return $this
      */
-    public function stop() : EventConsumer
+    final public function stop() : EventConsumer
     {
-        $this->running = false;
+        $this->listening = false;
         return $this;
     }
 
@@ -281,7 +270,7 @@ class AmqpEventConsumer implements EventConsumer
             throw new EventConsumerException($msg, 0, $exc);
         }
 
-        $this->running = true;
+        $this->listening = true;
 
         $this->logger->info('EventConsumer - Started listening queue "' . $resource . '"...');
 
@@ -296,8 +285,10 @@ class AmqpEventConsumer implements EventConsumer
      */
     public function eventReceivedCallback(AMQPMessage $msg) : void
     {
-        $this->logger->info('EventConsumer - Event received. raw-data: ' . $msg->getBody());
-        $this->logger->debug('EventConsumer - Debug data: ' . json_encode($msg->delivery_info));
+        $this->logger->info(
+            'EventConsumer - Event received.',
+            [ 'raw_data' => $msg->getBody() ] + $msg->delivery_info + $msg->get_properties()
+        );
 
         // Read the received event
         $metadata = $msg->delivery_info + $msg->get_properties();
@@ -311,7 +302,7 @@ class AmqpEventConsumer implements EventConsumer
                 'EventConsumer - Error procesing an event: ' . get_class($exc) . ' - ' . $exc->getMessage()
             );
 
-            // Requeue message for further action
+            // Requeue message for further action by sending NACK
             $this->sendNack($msg);
             return;
         }
@@ -338,6 +329,8 @@ class AmqpEventConsumer implements EventConsumer
         $event = call_user_func($eventClass . '::create', $data);
         if ($event instanceof EventBase) {
             $event->addMetadata($metadata);
+            $event->setTopic($metadata['exchange'] ?? null);
+            $event->setRoutingKey($metadata['routing_key'] ?? null);
         }
 
         return $event;
@@ -352,6 +345,11 @@ class AmqpEventConsumer implements EventConsumer
      */
     protected function getEventClass(array $data) : string
     {
+        // Validate the data contains an event
+        if (!isset($data['type']) || 'event' != $data['type']) {
+            throw new EventConsumerException('EventConsumer error - The data received is not an event!');
+        }
+
         // Get event name from event data
         if (!isset($data['name'])) {
             throw new EventConsumerException('EventConsumer error - The event received has no name!');
@@ -371,6 +369,7 @@ class AmqpEventConsumer implements EventConsumer
      *
      * @param AMQPMessage $msg
      * @return void
+     * @throws EventConsumerException
      */
     protected function sendAck(AMQPMessage $msg) : void
     {
@@ -378,8 +377,16 @@ class AmqpEventConsumer implements EventConsumer
         $ackChannel = $msg->get('channel');
         $deliveryTag = $msg->get('delivery_tag');
 
-        // Send ACK message to the queue
-        $ackChannel->basic_ack($deliveryTag);
+        try {
+            // Send ACK message to the queue
+            $ackChannel->basic_ack($deliveryTag);
+        } catch (AMQPExceptionInterface $exc) {
+            // Exception thrown when some AMQP error occurred
+            $this->logger->warning(
+                'EventConsumer - Error sending ACK for an event: ' . get_class($exc) . ' - ' . $exc->getMessage()
+            );
+            throw new EventConsumerException('EventConsumer - Error sending ACK for an event', 0, $exc);
+        }
     }
 
     /**
@@ -394,8 +401,16 @@ class AmqpEventConsumer implements EventConsumer
         $ackChannel = $msg->get('channel');
         $deliveryTag = $msg->get('delivery_tag');
 
-        // Send NACK message to the queue and requeue message for further action
-        $ackChannel->basic_reject($deliveryTag, true);
+        try {
+            // Send NACK message to the queue and requeue message for further action
+            $ackChannel->basic_reject($deliveryTag, true);
+        } catch (AMQPExceptionInterface $exc) {
+            // Exception thrown when some AMQP error occurred
+            $this->logger->warning(
+                'EventConsumer - Error sending NACK for an event: ' . get_class($exc) . ' - ' . $exc->getMessage()
+            );
+            throw new EventConsumerException('EventConsumer - Error sending NACK for an event', 0, $exc);
+        }
     }
 
     /**

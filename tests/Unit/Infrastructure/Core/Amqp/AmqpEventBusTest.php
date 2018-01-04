@@ -206,7 +206,7 @@ class AmqpEventBusTest extends AmqpTestCase
 
         $metadata = [
             'topic' => 'a_topic',
-            'routingKey' => 'some_key'
+            'routing_key' => 'some_key'
         ];
 
         // Create test object
@@ -272,7 +272,7 @@ class AmqpEventBusTest extends AmqpTestCase
 
         $metadata = [
             'topic' => '_a_topic_',
-            'routingKey' => '_a_key_'
+            'routing_key' => '_a_key_'
         ];
 
         $expected = [

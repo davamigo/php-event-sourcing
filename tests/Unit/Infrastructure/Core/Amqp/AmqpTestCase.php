@@ -25,7 +25,10 @@ class AmqpTestCase extends TestCase
         return $this
             ->getMockBuilder(AMQPStreamConnection::class)
             ->disableOriginalConstructor()
-            ->setMethods([ 'channel' ])
+            ->setMethods([
+                'channel',
+                'reconnect'
+            ])
             ->getMock();
     }
 
@@ -39,7 +42,17 @@ class AmqpTestCase extends TestCase
         return $this
             ->getMockBuilder(AMQPChannel::class)
             ->disableOriginalConstructor()
-            ->setMethods([ 'close', 'basic_publish', 'tx_select', 'tx_commit', 'basic_qos', 'basic_consume', 'wait' ])
+            ->setMethods([
+                'close',
+                'basic_publish',
+                'tx_select',
+                'tx_commit',
+                'basic_qos',
+                'basic_consume',
+                'wait',
+                'basic_ack',
+                'basic_reject'
+            ])
             ->getMock();
     }
 
@@ -72,5 +85,21 @@ class AmqpTestCase extends TestCase
         $reflectionProperty = $reflectionClass->getProperty($property);
         $reflectionProperty->setAccessible(true);
         return $reflectionProperty->getValue($object);
+    }
+
+    /**
+     * Get the value of a private property of an object using reflection
+     *
+     * @param object $object
+     * @param string $property
+     * @param mixed  $value
+     * @return void
+     */
+    protected function setPrivateProperty($object, string $property, $value) : void
+    {
+        $reflectionClass = new \ReflectionClass($object);
+        $reflectionProperty = $reflectionClass->getProperty($property);
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($object, $value);
     }
 }

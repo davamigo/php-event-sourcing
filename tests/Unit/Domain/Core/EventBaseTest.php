@@ -36,7 +36,7 @@ class EventBaseTest extends TestCase
 
         $metadata = [
             'topic' => null,
-            'routingKey' => null
+            'routing_key' => null
         ];
 
         $event = $this->createEvent('event_name', $entity);
@@ -65,7 +65,7 @@ class EventBaseTest extends TestCase
             'b' => 2,
             'c' => 3,
             'topic' => 'the_topic',
-            'routingKey' => 'the_routing_key'
+            'routing_key' => 'the_routing_key'
         ];
 
         $event = $this->createEvent(

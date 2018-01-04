@@ -168,7 +168,7 @@ class AmqpEventBus implements EventBus
         ];
 
         unset($metadata['topic']);
-        unset($metadata['routingKey']);
+        unset($metadata['routing_key']);
 
         return $metadata;
     }

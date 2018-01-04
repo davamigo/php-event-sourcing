@@ -63,7 +63,8 @@ abstract class MessageBase implements Message
         $this->type = $type;
         $this->name = $name;
         $this->createdAt = $createdAt ?: new \DateTime();
-        $this->metadata = $metadata;
+        $this->metadata = [];
+        $this->addMetadata($metadata);
     }
 
     /**

@@ -39,9 +39,6 @@ abstract class EventBase extends MessageBase implements Event
         \DateTime $createdAt = null,
         array $metadata = []
     ) {
-        $metadata['topic'] = $topic;
-        $metadata['routingKey'] = $routingKey;
-
         try {
             parent::__construct(Message::TYPE_EVENT, $name, $uuid, $createdAt, $metadata);
         } catch (MessageException $exc) {
@@ -49,6 +46,8 @@ abstract class EventBase extends MessageBase implements Event
         }
 
         $this->payload = $payload;
+        $this->setTopic($topic);
+        $this->setRoutingKey($routingKey);
     }
 
     /**
@@ -62,7 +61,7 @@ abstract class EventBase extends MessageBase implements Event
     }
 
     /**
-     * Returns the topic of the event. Usually the name of the queue.
+     * Returns the topic of the event. Usually the name of the queue or the exchange.
      *
      * @return string|null
      */
@@ -72,12 +71,36 @@ abstract class EventBase extends MessageBase implements Event
     }
 
     /**
-     * Returns the optional routing Key of the event (used to enroute the event  to the right queue).
+     * Sets the topic for the event. Usually the name of the queue or the exchange.
+     *
+     * @param string $topic
+     * @return EventBase
+     */
+    public function setTopic(string $topic = null) : EventBase
+    {
+        $this->metadata['topic'] = $topic;
+        return $this;
+    }
+
+    /**
+     * Returns the optional routing Key of the event (used to enroute the event to the right queue).
      *
      * @return string|null
      */
     public function routingKey()
     {
-        return $this->metadata['routingKey'] ?? null;
+        return $this->metadata['routing_key'] ?? null;
+    }
+
+    /**
+     * Sets the routing Key of the event (used to enroute the event to the right queue).
+     *
+     * @param string $routingKey
+     * @return EventBase
+     */
+    public function setRoutingKey(string $routingKey = null) : EventBase
+    {
+        $this->metadata['routing_key'] = $routingKey;
+        return $this;
     }
 }
