@@ -82,7 +82,7 @@ class InstantCommandBus implements CommandBus
 
             $commandHandlers = $this->getCommandHandlers($command);
             if (empty($commandHandlers)) {
-                $this->notice('Notice: Command ' . $command->name() . ' has no handlers');
+                $this->warning('Warning: Command ' . $command->name() . ' has no handlers');
             }
 
             foreach ($commandHandlers as $commandHandler) {
@@ -131,25 +131,15 @@ class InstantCommandBus implements CommandBus
             }
         }
 
+        if (empty($commandHandlers) && array_key_exists($command->name(), $this->handlers)) {
+            $commandHandlers[] = $this->handlers[$command->name()];
+        }
+
         return $commandHandlers;
     }
 
     /**
-     * Log a normal but significant event.
-     *
-     * @param string $message
-     * @param array  $context
-     * @return void
-     */
-    protected function notice($message, array $context = array())
-    {
-        if (null !== $this->logger) {
-            $this->logger->notice($message, $context);
-        }
-    }
-
-    /**
-     * Log a interesting event.
+     * Log an informational event.
      *
      * @param string $message
      * @param array  $context
@@ -163,7 +153,21 @@ class InstantCommandBus implements CommandBus
     }
 
     /**
-     * Log an error.
+     * Log a warning event.
+     *
+     * @param string $message
+     * @param array  $context
+     * @return void
+     */
+    protected function warning($message, array $context = array())
+    {
+        if (null !== $this->logger) {
+            $this->logger->warning($message, $context);
+        }
+    }
+
+    /**
+     * Log an error event.
      *
      * @param string $message
      * @param array  $context

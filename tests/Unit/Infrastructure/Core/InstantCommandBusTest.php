@@ -169,9 +169,9 @@ class InstantCommandBusTest extends TestCase
     }
 
     /**
-     * Test dispath function when no commands does nothing
+     * Test dispath function when no commands
      */
-    public function testDispatchWhenNoCommandsDoesNothing()
+    public function testDispatchWhenNoCommands()
     {
         $logger = new NullLogger();
 
@@ -182,9 +182,9 @@ class InstantCommandBusTest extends TestCase
     }
 
     /**
-     * Test dispath function when no command handler does nothing
+     * Test dispath function when no command handler
      */
-    public function testDispatchWhenNoCommandHandlerDoesNothing()
+    public function testDispatchWhenNoCommandHandler()
     {
         $command = new class extends CommandBase {
             use SerializableTrait;
@@ -203,6 +203,39 @@ class InstantCommandBusTest extends TestCase
         $commandBus->dispatch();
 
         $this->assertEquals([], $this->getPrivateProperty($commandBus, 'commands'));
+    }
+
+    /**
+     * Test dispatch when the handler is not in the command
+     */
+    public function testDispatchWhenTheHandlerIsNotInTheCommand()
+    {
+        $commandHandler = new class implements CommandHandler {
+            public $handleCalled = false;
+            public function handle(Command $command): void
+            {
+                $this->handleCalled = true;
+            }
+        };
+
+        $command = new class extends CommandBase {
+            use SerializableTrait;
+            public function __construct()
+            {
+                parent::__construct('command', new class implements Serializable {
+                    use SerializableTrait;
+                });
+            }
+        };
+
+        $logger = new NullLogger();
+
+        $commandBus = new InstantCommandBus([ 'command' => $commandHandler], $logger);
+        $commandBus->addCommand($command);
+        $commandBus->dispatch();
+
+        $this->assertEquals([], $this->getPrivateProperty($commandBus, 'commands'));
+        $this->assertTrue($commandHandler->handleCalled);
     }
 
     /**
