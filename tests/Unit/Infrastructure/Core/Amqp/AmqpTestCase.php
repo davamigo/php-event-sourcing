@@ -43,6 +43,9 @@ class AmqpTestCase extends TestCase
             ->getMockBuilder(AMQPChannel::class)
             ->disableOriginalConstructor()
             ->setMethods([
+                'exchange_declare',
+                'queue_declare',
+                'queue_bind',
                 'close',
                 'basic_publish',
                 'tx_select',

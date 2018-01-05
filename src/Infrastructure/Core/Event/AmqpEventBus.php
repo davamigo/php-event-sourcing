@@ -3,6 +3,7 @@
 namespace Davamigo\Infrastructure\Core\Event;
 
 use Davamigo\Domain\Core\Event\Event;
+use Davamigo\Domain\Core\Event\EventBase;
 use Davamigo\Domain\Core\Event\EventBus;
 use Davamigo\Domain\Core\Event\EventBusException;
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -46,19 +47,6 @@ class AmqpEventBus implements EventBus
     ) {
         $this->connection = $connection;
         $this->logger = $logger;
-        $this->configureResources();
-    }
-
-    /**
-     * Called in the constructor to configure the resources (exchanges & queues).
-     *
-     * Overwrite it to configure the actual resources.
-     *
-     * @return $this
-     */
-    public function configureResources() : EventBus
-    {
-        return $this;
     }
 
     /**
@@ -70,6 +58,10 @@ class AmqpEventBus implements EventBus
      */
     public function publishEvent(Event $event): EventBus
     {
+        if (!$event->topic() && $event instanceof EventBase) {
+            $event->setTopic($this->getDefaultExchange());
+        }
+
         // Create the message (serialize the event)
         $message = $this->createMessage($event);
         $resource = $event->topic();
@@ -82,6 +74,9 @@ class AmqpEventBus implements EventBus
         try {
             // Create a communications channel with the queue system
             $channel = $this->getChannel();
+
+            // Configure exchanges and queue
+            $this->configureResources($channel);
 
             // Set the channel in transaction mode
             $this->beginTransaction($channel);
@@ -109,11 +104,69 @@ class AmqpEventBus implements EventBus
     }
 
     /**
+     * Returns the default exchange
+     *
+     * @return string
+     */
+    protected function getDefaultExchange() : string
+    {
+        return 'app.events';
+    }
+
+    /**
+     * Returns the default exchange
+     *
+     * @return string
+     */
+    protected function getDefaultStorageQueue() : string
+    {
+        return 'app.events.storage';
+    }
+
+    /**
+     * Called in the constructor to configure the resources (exchanges & queues).
+     *
+     * Overwrite it to configure the actual resources.
+     *
+     * @param AMQPChannel $channel
+     * @return $this
+     */
+    protected function configureResources(AMQPChannel $channel) : EventBus
+    {
+        $exchange = $this->getDefaultExchange();
+        $queue = $this->getDefaultStorageQueue();
+        $this->bindExchangeAndQueue($channel, $exchange, $queue);
+
+        return $this;
+    }
+
+    /**
+     * Declares the exchange and the queue and binds them
+     *
+     * @param AMQPChannel $channel
+     * @param string      $exchange
+     * @param string|null $queue
+     * @return $this
+     */
+    final protected function bindExchangeAndQueue(
+        AMQPChannel $channel,
+        string $exchange,
+        string $queue = null
+    ) : EventBus {
+        $channel->exchange_declare($exchange, 'fanout', false, true, false);
+        if (null !== $queue) {
+            $channel->queue_declare($queue, false, true, false, false);
+            $channel->queue_bind($queue, $exchange);
+        }
+        return $this;
+    }
+
+    /**
      * Create a communications channel with the queue system.
      *
      * @return AMQPChannel
      */
-    protected function getChannel() : AMQPChannel
+    final protected function getChannel() : AMQPChannel
     {
         return $this->connection->channel();
     }
@@ -124,7 +177,7 @@ class AmqpEventBus implements EventBus
      * @param AMQPChannel $channel
      * @return $this
      */
-    protected function closeChannel(AMQPChannel $channel) : AmqpEventBus
+    final protected function closeChannel(AMQPChannel $channel) : AmqpEventBus
     {
         $channel->close();
         return $this;
@@ -183,7 +236,7 @@ class AmqpEventBus implements EventBus
      * @return AmqpEventBus
      * @return $this
      */
-    protected function publishMessage(
+    final protected function publishMessage(
         AMQPChannel $channel,
         AMQPMessage $message,
         string $resource,
@@ -199,7 +252,7 @@ class AmqpEventBus implements EventBus
      * @param AMQPChannel $channel
      * @return $this
      */
-    protected function beginTransaction(AMQPChannel $channel) : AmqpEventBus
+    final protected function beginTransaction(AMQPChannel $channel) : AmqpEventBus
     {
         $channel->tx_select();
         return $this;
@@ -211,7 +264,7 @@ class AmqpEventBus implements EventBus
      * @param AMQPChannel $channel
      * @return $this
      */
-    protected function commitTransaction(AMQPChannel $channel) : AmqpEventBus
+    final protected function commitTransaction(AMQPChannel $channel) : AmqpEventBus
     {
         $channel->tx_commit();
         return $this;

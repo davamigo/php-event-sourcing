@@ -84,6 +84,13 @@ class AmqpEventBusTest extends AmqpTestCase
     {
         $connectionMock = $this->createConnectionMock();
 
+        $channelMock = $this->createChannelMock();
+
+        $connectionMock
+            ->expects($this->once())
+            ->method('channel')
+            ->willReturn($channelMock);
+
         /** @var AMQPStreamConnection $connection */
         $connection = $connectionMock;
 
@@ -95,13 +102,14 @@ class AmqpEventBusTest extends AmqpTestCase
             use SerializableTrait;
         };
 
-        $this->expectException(EventBusException::class);
-
         // Create test object
         $eventBus = new AmqpEventBus($connection, new NullLogger());
 
         // Run test
         $eventBus->publishEvent($event);
+
+        // Assertions
+        $this->assertEquals('app.events', $event->topic());
     }
 
     /**
@@ -152,6 +160,7 @@ class AmqpEventBusTest extends AmqpTestCase
 
         /** @var AMQPStreamConnection $connection */
         $connection = $connectionMock;
+
 
         // Create test object
         $eventBus = new AmqpEventBus($connection, new NullLogger());
