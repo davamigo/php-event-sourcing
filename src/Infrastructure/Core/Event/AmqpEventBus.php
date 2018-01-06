@@ -97,7 +97,7 @@ class AmqpEventBus implements EventBus
             'EventBus - Event published. ' .
             'resource: ' . $resource . '. ' .
             'routing-key: ' . $routingKey . '. ' .
-            'raw-daata: ' . $message->getBody() .'.'
+            'raw-data: ' . $message->getBody() .'.'
         );
 
         return $this;
@@ -114,13 +114,16 @@ class AmqpEventBus implements EventBus
     }
 
     /**
-     * Returns the default exchange
+     * Returns the default queues
      *
-     * @return string
+     * @return string[]
      */
-    protected function getDefaultStorageQueue() : string
+    protected function getDefaultQueues() : array
     {
-        return 'app.events.storage';
+        return [
+            'app.events.storage',
+            'app.events.model'
+        ];
     }
 
     /**
@@ -131,11 +134,11 @@ class AmqpEventBus implements EventBus
      * @param AMQPChannel $channel
      * @return $this
      */
-    protected function configureResources(AMQPChannel $channel) : EventBus
+    protected function configureResources(AMQPChannel $channel) : AmqpEventBus
     {
         $exchange = $this->getDefaultExchange();
-        $queue = $this->getDefaultStorageQueue();
-        $this->bindExchangeAndQueue($channel, $exchange, $queue);
+        $queues = $this->getDefaultQueues();
+        $this->bindExchangeAndQueue($channel, $exchange, $queues);
 
         return $this;
     }
@@ -145,16 +148,16 @@ class AmqpEventBus implements EventBus
      *
      * @param AMQPChannel $channel
      * @param string      $exchange
-     * @param string|null $queue
+     * @param string[]    $queues
      * @return $this
      */
     final protected function bindExchangeAndQueue(
         AMQPChannel $channel,
         string $exchange,
-        string $queue = null
-    ) : EventBus {
+        array $queues = []
+    ) : AmqpEventBus {
         $channel->exchange_declare($exchange, 'fanout', false, true, false);
-        if (null !== $queue) {
+        foreach ($queues as $queue) {
             $channel->queue_declare($queue, false, true, false, false);
             $channel->queue_bind($queue, $exchange);
         }

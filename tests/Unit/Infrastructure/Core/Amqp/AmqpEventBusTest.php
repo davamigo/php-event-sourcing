@@ -80,7 +80,7 @@ class AmqpEventBusTest extends AmqpTestCase
     /**
      * Test publishEvent()
      */
-    public function testPublishEventWhenNoResource()
+    public function testPublishEventUsingDefaultExchange()
     {
         $connectionMock = $this->createConnectionMock();
 
@@ -110,6 +110,38 @@ class AmqpEventBusTest extends AmqpTestCase
 
         // Assertions
         $this->assertEquals('app.events', $event->topic());
+    }
+
+    /**
+     * Test publishEvent()
+     */
+    public function testPublishEventWhenNoResource()
+    {
+        $connectionMock = $this->createConnectionMock();
+
+        /** @var AMQPStreamConnection $connection */
+        $connection = $connectionMock;
+
+        $payload = new class implements Serializable {
+            use SerializableTrait;
+        };
+
+        $event = new class ('name', $payload, '', 'key') extends EventBase {
+            use SerializableTrait;
+        };
+
+        // Create test object
+        $eventBus = new class ($connection, new NullLogger()) extends AmqpEventBus {
+            protected function getDefaultExchange(): string
+            {
+                return '';
+            }
+        };
+
+        $this->expectException(EventBusException::class);
+
+        // Run test
+        $eventBus->publishEvent($event);
     }
 
     /**
