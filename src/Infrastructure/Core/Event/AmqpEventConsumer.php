@@ -129,17 +129,17 @@ class AmqpEventConsumer implements EventConsumer
     /**
      * Starts listening for events from a queue or topic.
      *
-     * @param string   $resource  The name of the queue to consume
-     * @param callable $callback  Callback func to call wen new event received
+     * @param string   $topic    The topic to consume (usually the name of the queue).
+     * @param callable $callback Callback func to call wen new event received
      * @return $this
      * @throws EventConsumerException
      */
-    final public function listen($resource, callable $callback) : EventConsumer
+    final public function listen($topic, callable $callback) : EventConsumer
     {
         $this->callback = $callback;
 
         // Prepare AMQP system to receive events
-        $channel = $this->enableBasicConsume($resource);
+        $channel = $this->enableBasicConsume($topic);
 
         // While the process in running
         while ($this->listening && count($channel->callbacks)) {
@@ -171,14 +171,14 @@ class AmqpEventConsumer implements EventConsumer
 
             if ($errorOccurred || $timeoutOccurred) {
                 $attempts = $this->computeAttempts($timeoutOccurred);
-                $channel = $this->reconnect($resource, $attempts);
+                $channel = $this->reconnect($topic, $attempts);
                 if (null == $channel) {
                     $this->stop();
                 }
             }
         }
 
-        $this->logger->info('EventConsumer - Stopped listening queue "' . $resource . '".');
+        $this->logger->info('EventConsumer - Stopped listening queue "' . $topic . '".');
 
         return $this;
     }
@@ -468,7 +468,7 @@ class AmqpEventConsumer implements EventConsumer
      * @return void
      * @codeCoverageIgnore
      */
-    protected function sleep(int $seconds) : void
+    final protected function sleep(int $seconds) : void
     {
         call_user_func('sleep', $seconds);
     }

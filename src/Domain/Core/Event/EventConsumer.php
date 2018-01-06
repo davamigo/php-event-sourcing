@@ -13,12 +13,12 @@ interface EventConsumer
     /**
      * Starts listening for events from a queue or topic.
      *
-     * @param string   $resource  The name of the queue to consume.
-     * @param callable $callback  Callback func to call wen new event received.
+     * @param string   $topic    The topic to consume (usually the name of the queue).
+     * @param callable $callback Callback func to call wen new event received.
      * @return $this
      * @throws EventConsumerException
      */
-    public function listen($resource, callable $callback) : EventConsumer;
+    public function listen($topic, callable $callback) : EventConsumer;
 
     /**
      * Stops listening events.
