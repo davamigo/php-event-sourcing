@@ -3,8 +3,12 @@
 namespace Davamigo\Infrastructure\Core\Storage;
 
 use Davamigo\Domain\Core\Event\Event;
+use Davamigo\Domain\Core\Event\EventBase;
+use Davamigo\Domain\Core\Serializable\SerializableException;
+use Davamigo\Domain\Core\Serializable\SerializableTrait;
 use Davamigo\Domain\Core\Storage\EventStorer;
 use Davamigo\Domain\Core\Storage\EventStorerException;
+use Davamigo\Domain\Helpers\AutoSerializeHelper;
 use MongoDB\Client as MongoDBClient;
 use MongoDB\Exception\Exception as MongoDBException;
 use Psr\Log\LoggerInterface;
@@ -51,14 +55,27 @@ class MongoDBEventStorer implements EventStorer
      */
     public function storeEvent(Event $event): EventStorer
     {
+        if ($event instanceof EventBase
+            && $event instanceof SerializableTrait) {
+            $metadata = $event->metadata();
+            foreach ($metadata as $key => $item) {
+                if (!AutoSerializeHelper::isSerializable($item)) {
+                    $event->addMetadata([ $key => get_class($item)]);
+                }
+            }
+        }
+
         try {
-            $database = $this->client->selectDatabase($this->getDefaultDatabase());
-
-            $collection = $database->selectCollection($this->getDefaultCollection());
-
             $data = $event->serialize();
             $data['_id'] = $event->uuid();
+        } catch (SerializableException $exc) {
+            $this->logger->error('MongoDB event storer exception: error serializing the event!');
+            throw new EventStorerException('MongoDB event storer: error serializing the event!', 0, $exc);
+        }
 
+        try {
+            $database = $this->client->selectDatabase($this->getDefaultDatabase());
+            $collection = $database->selectCollection($this->getDefaultCollection());
             $collection->insertOne($data);
         } catch (MongoDBException $exc) {
             $this->logger->error('MongoDB event storer exception: ' . get_class($exc));

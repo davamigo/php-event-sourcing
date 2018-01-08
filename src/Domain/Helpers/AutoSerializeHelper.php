@@ -23,12 +23,33 @@ class AutoSerializeHelper
     public static function serialize($obj) : array
     {
         if (!is_object($obj)) {
-            throw new AutoSerializeException('The param must be an object!');
+            throw new AutoSerializeException('AutoSerializeHelper error: The param must be an object!');
         }
 
         $class = new \ReflectionClass(get_class($obj));
 
         return static::serializeClass($obj, $class);
+    }
+
+    /**
+     * Return if the value is serializable
+     *
+     * @param mixed $value
+     * @return bool
+     */
+    public static function isSerializable($value) : bool
+    {
+        if (is_scalar($value) || is_array($value)) {
+            return true;
+        }
+
+        if ($value instanceof Serializable
+            || $value instanceof Uuid
+            || $value instanceof \DateTime) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -104,6 +125,8 @@ class AutoSerializeHelper
             return $property->format(\DateTime::RFC3339);
         }
 
-        throw new AutoSerializeException('The class ' . get_class($property) . ' is not serializable!');
+        throw new AutoSerializeException(
+            'AutoSerializeHelper: The class ' . get_class($property) . ' is not serializable!'
+        );
     }
 }
