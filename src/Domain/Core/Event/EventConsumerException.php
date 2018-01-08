@@ -5,7 +5,7 @@ namespace Davamigo\Domain\Core\Event;
 use Davamigo\Domain\Core\CoreException;
 
 /**
- * Exception for Event consumer classes
+ * Exception for EventConsumer classes
  *
  * @package Davamigo\Domain\Core\Event
  * @author davamigo@gmail.com
