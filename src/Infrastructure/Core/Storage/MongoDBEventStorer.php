@@ -56,7 +56,7 @@ class MongoDBEventStorer implements EventStorer
     public function storeEvent(Event $event): EventStorer
     {
         if ($event instanceof EventBase
-            && $event instanceof SerializableTrait) {
+            && array_key_exists(SerializableTrait::class, class_uses($event))) {
             $metadata = $event->metadata();
             foreach ($metadata as $key => $item) {
                 if (!AutoSerializeHelper::isSerializable($item)) {
@@ -67,7 +67,7 @@ class MongoDBEventStorer implements EventStorer
 
         try {
             $data = $event->serialize();
-            $data['_id'] = $event->uuid();
+            $data['_id'] = $event->uuid()->toString();
         } catch (SerializableException $exc) {
             $this->logger->error('MongoDB event storer exception: error serializing the event!');
             throw new EventStorerException('MongoDB event storer: error serializing the event!', 0, $exc);
