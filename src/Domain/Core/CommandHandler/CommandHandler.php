@@ -1,11 +1,13 @@
 <?php
 
-namespace Davamigo\Domain\Core\Command;
+namespace Davamigo\Domain\Core\CommandHandler;
+
+use Davamigo\Domain\Core\Command\Command;
 
 /**
  * Interface for a command handler
  *
- * @package Davamigo\Domain\Core\Command
+ * @package Davamigo\Domain\Core\CommandHandler
  * @author davamigo@gmail.com
  */
 interface CommandHandler

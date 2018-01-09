@@ -3,10 +3,10 @@
 namespace Davamigo\Infrastructure\Core\Command;
 
 use Davamigo\Domain\Core\Command\Command;
-use Davamigo\Domain\Core\Command\CommandBus;
-use Davamigo\Domain\Core\Command\CommandBusException;
-use Davamigo\Domain\Core\Command\CommandHandler;
-use Davamigo\Domain\Core\Command\CommandHandlerException;
+use Davamigo\Domain\Core\CommandBus\CommandBus;
+use Davamigo\Domain\Core\CommandBus\CommandBusException;
+use Davamigo\Domain\Core\CommandHandler\CommandHandler;
+use Davamigo\Domain\Core\CommandHandler\CommandHandlerException;
 use Psr\Log\LoggerInterface;
 
 /**

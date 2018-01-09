@@ -4,9 +4,9 @@ namespace Test\Unit\Infrastructure\Core;
 
 use Davamigo\Domain\Core\Command\Command;
 use Davamigo\Domain\Core\Command\CommandBase;
-use Davamigo\Domain\Core\Command\CommandBusException;
-use Davamigo\Domain\Core\Command\CommandHandler;
-use Davamigo\Domain\Core\Command\CommandHandlerException;
+use Davamigo\Domain\Core\CommandBus\CommandBusException;
+use Davamigo\Domain\Core\CommandHandler\CommandHandler;
+use Davamigo\Domain\Core\CommandHandler\CommandHandlerException;
 use Davamigo\Infrastructure\Core\Command\InstantCommandBus;
 use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Serializable\SerializableTrait;

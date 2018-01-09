@@ -1,11 +1,14 @@
 <?php
 
-namespace Davamigo\Domain\Core\Command;
+namespace Davamigo\Domain\Core\CommandBus;
+
+use Davamigo\Domain\Core\Command\Command;
+use Davamigo\Domain\Core\CommandHandler\CommandHandler;
 
 /**
  * Interface for a command bus, which dispatches the commands to multiple handlers.
  *
- * @package Davamigo\Domain\Core\Command
+ * @package Davamigo\Domain\Core\CommandBus
  * @author davamigo@gmail.com
  */
 interface CommandBus
