@@ -55,23 +55,8 @@ class MongoDBEventStorage implements EventStorage
      */
     public function storeEvent(Event $event): EventStorage
     {
-        if ($event instanceof EventBase
-            && array_key_exists(SerializableTrait::class, class_uses($event))) {
-            $metadata = $event->metadata();
-            foreach ($metadata as $key => $item) {
-                if (!AutoSerializeHelper::isSerializable($item)) {
-                    $event->addMetadata([ $key => get_class($item)]);
-                }
-            }
-        }
-
-        try {
-            $data = $event->serialize();
-            $data['_id'] = $event->uuid()->toString();
-        } catch (SerializableException $exc) {
-            $this->logger->error('MongoDB event storer exception: error serializing the event!');
-            throw new EventStorageException('MongoDB event storer: error serializing the event!', 0, $exc);
-        }
+        $data = $this->serializeEvent($event);
+        $data['_id'] = $event->uuid()->toString();
 
         try {
             $database = $this->client->selectDatabase($this->getDefaultDatabase());
@@ -103,5 +88,36 @@ class MongoDBEventStorage implements EventStorage
     protected function getDefaultCollection() : string
     {
         return 'storage';
+    }
+
+    /**
+     * Serializes an event.
+     *
+     * @param Event $event
+     * @return array
+     * @throws EventStorageException
+     */
+    protected function serializeEvent(Event $event) : array
+    {
+        // Remove non-serializable objects from the metadata
+        if ($event instanceof EventBase
+            && array_key_exists(SerializableTrait::class, class_uses($event))) {
+            $metadata = $event->metadata();
+            foreach ($metadata as $key => $item) {
+                if (!AutoSerializeHelper::isSerializable($item)) {
+                    $event->addMetadata([ $key => (array) $item]);
+                }
+            }
+        }
+
+        // Serialize
+        try {
+            $data = $event->serialize();
+        } catch (SerializableException $exc) {
+            $this->logger->error('MongoDB event storer exception: error serializing the event!');
+            throw new EventStorageException('MongoDB event storer: error serializing the event!', 0, $exc);
+        }
+
+        return $data;
     }
 }
