@@ -8,6 +8,7 @@ use Davamigo\Domain\Core\EventConsumer\EventConsumerException;
 use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Serializable\SerializableTrait;
 use Davamigo\Infrastructure\Core\EventConsumer\AmqpEventConsumer;
+use Davamigo\Infrastructure\Core\Helpers\AmqpConfigurator;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPRuntimeException;
@@ -49,7 +50,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $logger = new NullLogger();
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, $evenList, $logger, []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), $evenList, $logger, []);
 
         // Assertions
         $this->assertEquals($connection, $this->getPrivateProperty($eventConsumer, 'connection'));
@@ -79,7 +80,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         ];
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), $options);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), $options);
 
         // Assertions
         $this->assertEquals(101, $this->getPrivateProperty($eventConsumer, 'waitTimeout'));
@@ -112,7 +113,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         };
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         $channelMock
             ->expects($this->once())
@@ -166,7 +167,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         };
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), [
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), [
             AmqpEventConsumer::OPTION_RESTART_ATTEMPTS => 0
         ]);
 
@@ -209,7 +210,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         };
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), [
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), [
             AmqpEventConsumer::OPTION_RESTART_ATTEMPTS => 0
         ]);
 
@@ -252,7 +253,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         };
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), [
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), [
             AmqpEventConsumer::OPTION_RESTART_ATTEMPTS => 0
         ]);
 
@@ -277,7 +278,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Run the test
         $this->setPrivateProperty($eventConsumer, 'listening', true);
@@ -299,7 +300,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Add the supported events
         $event = new class extends EventBase {
@@ -345,7 +346,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Add the supported events
         $this->expectException(EventConsumerException::class);
@@ -379,7 +380,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Run the test
         $result = $this->callPrivateMethod($eventConsumer, 'enableBasicConsume', [ 'resource' ]);
@@ -413,7 +414,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Run the test
         $this->expectException(EventConsumerException::class);
@@ -438,7 +439,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Test data: the event base
         $event = new class extends EventBase {
@@ -495,7 +496,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Test data: the event base
         $event = new class extends EventBase {
@@ -538,7 +539,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Test data: the event base
         $event = new class extends EventBase {
@@ -587,7 +588,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Test data
         $data = [
@@ -612,7 +613,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Test data
         $data = [
@@ -636,7 +637,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Test data
         $data = [
@@ -661,7 +662,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Test data
         $data = [
@@ -691,7 +692,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Test data
         $msg = new AMQPMessage();
@@ -721,7 +722,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Test data
         $msg = new AMQPMessage();
@@ -751,7 +752,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Test data
         $msg = new AMQPMessage();
@@ -781,7 +782,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Test data
         $msg = new AMQPMessage();
@@ -805,7 +806,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), [
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), [
             AmqpEventConsumer::OPTION_RESTART_ATTEMPTS => 0
         ]);
 
@@ -828,7 +829,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), [
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), [
             AmqpEventConsumer::OPTION_RESTART_ATTEMPTS => 0
         ]);
 
@@ -851,7 +852,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), [
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), [
             AmqpEventConsumer::OPTION_RESTART_ATTEMPTS => 5
         ]);
 
@@ -874,7 +875,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), [
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), [
             AmqpEventConsumer::OPTION_RESTART_ATTEMPTS => 5
         ]);
 
@@ -916,7 +917,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Run the test
         $result = $this->callPrivateMethod($eventConsumer, 'reconnect', [ 'resource', 1 ]);
@@ -943,7 +944,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), []);
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), []);
 
         // Run the test
         $result = $this->callPrivateMethod($eventConsumer, 'reconnect', [ 'resource', 1 ]);
@@ -971,7 +972,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create the AmqpEventConsumer object
-        $eventConsumer = new AmqpEventConsumer($connection, [], new NullLogger(), [
+        $eventConsumer = new AmqpEventConsumer($connection, new AmqpConfigurator(), [], new NullLogger(), [
             AmqpEventConsumer::OPTION_RESTART_WAIT_TIME => 1
         ]);
 

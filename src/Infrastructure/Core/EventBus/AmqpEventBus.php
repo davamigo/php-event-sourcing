@@ -6,6 +6,7 @@ use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\Event\EventBase;
 use Davamigo\Domain\Core\EventBus\EventBus;
 use Davamigo\Domain\Core\EventBus\EventBusException;
+use Davamigo\Infrastructure\Core\Helpers\AmqpConfigurator;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPExceptionInterface;
@@ -29,6 +30,13 @@ class AmqpEventBus implements EventBus
     protected $connection = null;
 
     /**
+     * The configuration object for AMQL queue system
+     *
+     * @var AmqpConfigurator
+     */
+    protected $config = null;
+
+    /**
      * The monolog object to log events
      *
      * @var LoggerInterface
@@ -38,14 +46,17 @@ class AmqpEventBus implements EventBus
     /**
      * AmqpEventBus constructor.
      *
-     * @param AMQPStreamConnection $connection  AMQ Connection object
-     * @param LoggerInterface      $logger      Monolog object
+     * @param AMQPStreamConnection $connection AMQ Connection object
+     * @param AmqpConfigurator     $config     Configuration object
+     * @param LoggerInterface      $logger     Monolog object
      */
     public function __construct(
         AMQPStreamConnection $connection,
+        AmqpConfigurator $config,
         LoggerInterface $logger
     ) {
         $this->connection = $connection;
+        $this->config = $config;
         $this->logger = $logger;
     }
 
@@ -59,7 +70,7 @@ class AmqpEventBus implements EventBus
     public function publishEvent(Event $event): EventBus
     {
         if (!$event->topic() && $event instanceof EventBase) {
-            $event->setTopic($this->getDefaultExchange());
+            $event->setTopic($this->config->getDefaultExchange());
         }
 
         // Create the message (serialize the event)
@@ -104,63 +115,19 @@ class AmqpEventBus implements EventBus
     }
 
     /**
-     * Returns the default exchange
-     *
-     * @return string
-     */
-    protected function getDefaultExchange() : string
-    {
-        return 'app.events';
-    }
-
-    /**
-     * Returns the default queues
-     *
-     * @return string[]
-     */
-    protected function getDefaultQueues() : array
-    {
-        return [
-            'app.events.storage',
-            'app.events.model'
-        ];
-    }
-
-    /**
      * Called in the constructor to configure the resources (exchanges & queues).
      *
      * Overwrite it to configure the actual resources.
      *
      * @param AMQPChannel $channel
      * @return $this
+     * @throws EventBusException
      */
     protected function configureResources(AMQPChannel $channel) : AmqpEventBus
     {
-        $exchange = $this->getDefaultExchange();
-        $queues = $this->getDefaultQueues();
-        $this->bindExchangeAndQueue($channel, $exchange, $queues);
-
-        return $this;
-    }
-
-    /**
-     * Declares the exchange and the queue and binds them
-     *
-     * @param AMQPChannel $channel
-     * @param string      $exchange
-     * @param string[]    $queues
-     * @return $this
-     */
-    final protected function bindExchangeAndQueue(
-        AMQPChannel $channel,
-        string $exchange,
-        array $queues = []
-    ) : AmqpEventBus {
-        $channel->exchange_declare($exchange, 'fanout', false, true, false);
-        foreach ($queues as $queue) {
-            $channel->queue_declare($queue, false, true, false, false);
-            $channel->queue_bind($queue, $exchange);
-        }
+        $exchange = $this->config->getDefaultExchange();
+        $queues = $this->config->getDefaultQueues();
+        $this->config->bindExchangeAndQueue($channel, $exchange, $queues);
         return $this;
     }
 

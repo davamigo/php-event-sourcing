@@ -6,6 +6,7 @@ use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\Event\EventBase;
 use Davamigo\Domain\Core\EventConsumer\EventConsumer;
 use Davamigo\Domain\Core\EventConsumer\EventConsumerException;
+use Davamigo\Infrastructure\Core\Helpers\AmqpConfigurator;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPExceptionInterface;
@@ -28,6 +29,13 @@ class AmqpEventConsumer implements EventConsumer
      * @var AMQPStreamConnection
      */
     protected $connection = null;
+
+    /**
+     * The configuration object for AMQL queue system
+     *
+     * @var AmqpConfigurator
+     */
+    protected $config = null;
 
     /**
      * Supported events list. $events = [ 'event_name' => 'event_class_name' ]
@@ -93,37 +101,26 @@ class AmqpEventConsumer implements EventConsumer
     /**
      * AmqpEventBus constructor.
      *
-     * @param AMQPStreamConnection $connection  AMQ Connection object
-     * @param Event[]              $events      List of supported events
-     * @param LoggerInterface      $logger      Monolog object
-     * @param array                $options     Configuration options
+     * @param AMQPStreamConnection $connection AMQ Connection object
+     * @param AmqpConfigurator     $config     Configuration object
+     * @param Event[]              $events     List of supported events
+     * @param LoggerInterface      $logger     Monolog object
+     * @param array                $options    Configuration options
      * @throws EventConsumerException
      */
     public function __construct(
         AMQPStreamConnection $connection,
+        AmqpConfigurator $config,
         array $events,
         LoggerInterface $logger,
         array $options = []
     ) {
         $this->connection = $connection;
+        $this->config = $config;
         $this->events = [];
         $this->logger = $logger;
         $this->addSupportedEvents($events);
         $this->readOptions($options);
-        $this->configureResources();
-    }
-
-    /**
-     * Called in the constructor to configure the resources (exchanges & queues).
-     *
-     * Overwrite it to configure the actual resources.
-     *
-     * @return $this
-     * @throws EventConsumerException
-     */
-    public function configureResources() : EventConsumer
-    {
-        return $this;
     }
 
     /**
@@ -260,6 +257,9 @@ class AmqpEventConsumer implements EventConsumer
             // Create a communications channel with the queue system
             $channel = $this->connection->channel();
 
+            // Configure exchanges and queue
+            $this->configureResources($channel);
+
             // Limit to 1 message per worker at the same time
             $channel->basic_qos(null, 1, null);
 
@@ -275,6 +275,23 @@ class AmqpEventConsumer implements EventConsumer
         $this->logger->info('EventConsumer - Started listening queue "' . $resource . '"...');
 
         return $channel;
+    }
+
+    /**
+     * Called in the constructor to configure the resources (exchanges & queues).
+     *
+     * Overwrite it to configure the actual resources.
+     *
+     * @param AMQPChannel $channel
+     * @return $this
+     * @throws EventConsumerException
+     */
+    protected function configureResources(AMQPChannel $channel) : EventConsumer
+    {
+        $exchange = $this->config->getDefaultExchange();
+        $queues = $this->config->getDefaultQueues();
+        $this->config->bindExchangeAndQueue($channel, $exchange, $queues);
+        return $this;
     }
 
     /**

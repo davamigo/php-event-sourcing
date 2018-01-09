@@ -9,6 +9,7 @@ use Davamigo\Domain\Core\Serializable\SerializableTrait;
 use Davamigo\Domain\Core\EventStorage\EventStorage;
 use Davamigo\Domain\Core\EventStorage\EventStorageException;
 use Davamigo\Domain\Helpers\AutoSerializeHelper;
+use Davamigo\Infrastructure\Core\Helpers\MongoDBConfigurator;
 use MongoDB\Client as MongoDBClient;
 use MongoDB\Exception\Exception as MongoDBException;
 use Psr\Log\LoggerInterface;
@@ -26,6 +27,11 @@ class MongoDBEventStorage implements EventStorage
     protected $client;
 
     /**
+     * @var MongoDBConfigurator
+     */
+    protected $config;
+
+    /**
      * The monolog object to log events
      *
      * @var LoggerInterface
@@ -35,14 +41,17 @@ class MongoDBEventStorage implements EventStorage
     /**
      * MongoDBEventStorer constructor.
      *
-     * @param MongoDBClient   $client  The mongoDB client
-     * @param LoggerInterface $logger  Monolog object
+     * @param MongoDBClient       $client The mongoDB client
+     * @param MongoDBConfigurator $config Configuration object
+     * @param LoggerInterface     $logger Monolog object
      */
     public function __construct(
         MongoDBClient $client,
+        MongoDBConfigurator $config,
         LoggerInterface $logger
     ) {
         $this->client = $client;
+        $this->config = $config;
         $this->logger = $logger;
     }
 
@@ -59,8 +68,8 @@ class MongoDBEventStorage implements EventStorage
         $data['_id'] = $event->uuid()->toString();
 
         try {
-            $database = $this->client->selectDatabase($this->getDefaultDatabase());
-            $collection = $database->selectCollection($this->getDefaultCollection());
+            $database = $this->client->selectDatabase($this->config->getDefaultDatabase());
+            $collection = $database->selectCollection($this->config->getDefaultCollection());
             $collection->insertOne($data);
         } catch (MongoDBException $exc) {
             $this->logger->error('MongoDB event storer exception: ' . get_class($exc));
@@ -68,26 +77,6 @@ class MongoDBEventStorage implements EventStorage
         }
 
         return $this;
-    }
-
-    /**
-     * Returns the default database name
-     *
-     * @return string
-     */
-    protected function getDefaultDatabase() : string
-    {
-        return 'events';
-    }
-
-    /**
-     * Returns the default collection name
-     *
-     * @return string
-     */
-    protected function getDefaultCollection() : string
-    {
-        return 'storage';
     }
 
     /**

@@ -7,6 +7,7 @@ use Davamigo\Domain\Core\EventBus\EventBusException;
 use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Serializable\SerializableTrait;
 use Davamigo\Infrastructure\Core\EventBus\AmqpEventBus;
+use Davamigo\Infrastructure\Core\Helpers\AmqpConfigurator;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPIOException;
@@ -73,7 +74,7 @@ class AmqpEventBusTest extends AmqpTestCase
         $event->setRoutingKey('102');
 
         // Create test object
-        $eventBus = new AmqpEventBus($connection, new NullLogger());
+        $eventBus = new AmqpEventBus($connection, new AmqpConfigurator(), new NullLogger());
 
         // Run test
         $eventBus->publishEvent($event);
@@ -105,7 +106,7 @@ class AmqpEventBusTest extends AmqpTestCase
         };
 
         // Create test object
-        $eventBus = new AmqpEventBus($connection, new NullLogger());
+        $eventBus = new AmqpEventBus($connection, new AmqpConfigurator(), new NullLogger());
 
         // Run test
         $eventBus->publishEvent($event);
@@ -132,13 +133,15 @@ class AmqpEventBusTest extends AmqpTestCase
             use SerializableTrait;
         };
 
-        // Create test object
-        $eventBus = new class ($connection, new NullLogger()) extends AmqpEventBus {
-            protected function getDefaultExchange(): string
+        $configurator = new class extends AmqpConfigurator {
+            public function getDefaultExchange(): string
             {
                 return '';
             }
         };
+
+        // Create test object
+        $eventBus = new AmqpEventBus($connection, $configurator, new NullLogger());
 
         $this->expectException(EventBusException::class);
 
@@ -172,7 +175,7 @@ class AmqpEventBusTest extends AmqpTestCase
         $this->expectException(EventBusException::class);
 
         // Create test object
-        $eventBus = new AmqpEventBus($connection, new NullLogger());
+        $eventBus = new AmqpEventBus($connection, new AmqpConfigurator(), new NullLogger());
 
         // Run test
         $eventBus->publishEvent($event);
@@ -196,7 +199,7 @@ class AmqpEventBusTest extends AmqpTestCase
         $connection = $connectionMock;
 
         // Create test object
-        $eventBus = new AmqpEventBus($connection, new NullLogger());
+        $eventBus = new AmqpEventBus($connection, new AmqpConfigurator(), new NullLogger());
 
         // Run test
         $this->callPrivateMethod($eventBus, 'getChannel');
@@ -222,7 +225,7 @@ class AmqpEventBusTest extends AmqpTestCase
         $channel = $channelMock;
 
         // Create test object
-        $eventBus = new AmqpEventBus($connection, new NullLogger());
+        $eventBus = new AmqpEventBus($connection, new AmqpConfigurator(), new NullLogger());
 
         // Run test
         $this->callPrivateMethod($eventBus, 'closeChannel', [ $channel ]);
@@ -255,7 +258,7 @@ class AmqpEventBusTest extends AmqpTestCase
         ];
 
         // Create test object
-        $eventBus = new AmqpEventBus($connection, new NullLogger());
+        $eventBus = new AmqpEventBus($connection, new AmqpConfigurator(), new NullLogger());
 
         // Run test
         $result = $this->callPrivateMethod($eventBus, 'createMessage', [ $event ]);
@@ -297,7 +300,7 @@ class AmqpEventBusTest extends AmqpTestCase
 
 
         // Create test object
-        $eventBus = new AmqpEventBus($connection, new NullLogger());
+        $eventBus = new AmqpEventBus($connection, new AmqpConfigurator(), new NullLogger());
         // Run test
         $result = $this->callPrivateMethod($eventBus, 'encodeMessage', [ $data ]);
 
@@ -325,7 +328,7 @@ class AmqpEventBusTest extends AmqpTestCase
         ];
 
         // Create test object
-        $eventBus = new AmqpEventBus($connection, new NullLogger());
+        $eventBus = new AmqpEventBus($connection, new AmqpConfigurator(), new NullLogger());
 
         // Run test
         $result = $this->callPrivateMethod($eventBus, 'prepareMetatada', [ $metadata ]);
@@ -355,7 +358,7 @@ class AmqpEventBusTest extends AmqpTestCase
         ];
 
         // Create test object
-        $eventBus = new AmqpEventBus($connection, new NullLogger());
+        $eventBus = new AmqpEventBus($connection, new AmqpConfigurator(), new NullLogger());
 
         // Run test
         $result = $this->callPrivateMethod($eventBus, 'prepareMetatada', [ $metadata ]);
@@ -384,7 +387,7 @@ class AmqpEventBusTest extends AmqpTestCase
         $channel = $channelMock;
 
         // Create test object
-        $eventBus = new AmqpEventBus($connection, new NullLogger());
+        $eventBus = new AmqpEventBus($connection, new AmqpConfigurator(), new NullLogger());
 
         // Run test
         $this->callPrivateMethod($eventBus, 'publishMessage', [ $channel, new AMQPMessage(), 'res', 'key' ]);
@@ -410,7 +413,7 @@ class AmqpEventBusTest extends AmqpTestCase
         $channel = $channelMock;
 
         // Create test object
-        $eventBus = new AmqpEventBus($connection, new NullLogger());
+        $eventBus = new AmqpEventBus($connection, new AmqpConfigurator(), new NullLogger());
 
         // Run test
         $this->callPrivateMethod($eventBus, 'beginTransaction', [ $channel ]);
@@ -436,7 +439,7 @@ class AmqpEventBusTest extends AmqpTestCase
         $channel = $channelMock;
 
         // Create test object
-        $eventBus = new AmqpEventBus($connection, new NullLogger());
+        $eventBus = new AmqpEventBus($connection, new AmqpConfigurator(), new NullLogger());
 
         // Run test
         $this->callPrivateMethod($eventBus, 'commitTransaction', [ $channel ]);
