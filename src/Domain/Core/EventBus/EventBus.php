@@ -1,11 +1,13 @@
 <?php
 
-namespace Davamigo\Domain\Core\Event;
+namespace Davamigo\Domain\Core\EventBus;
+
+use Davamigo\Domain\Core\Event\Event;
 
 /**
  * Interface for an event bus, which dispatches the event (usually to a queue).
  *
- * @package Davamigo\Domain\Core\Event
+ * @package Davamigo\Domain\Core\EventBus
  * @author davamigo@gmail.com
  */
 interface EventBus

@@ -3,7 +3,7 @@
 namespace Test\Unit\Infrastructure\Core\Amqp;
 
 use Davamigo\Domain\Core\Event\EventBase;
-use Davamigo\Domain\Core\Event\EventBusException;
+use Davamigo\Domain\Core\EventBus\EventBusException;
 use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Serializable\SerializableTrait;
 use Davamigo\Infrastructure\Core\Event\AmqpEventBus;

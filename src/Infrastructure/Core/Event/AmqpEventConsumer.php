@@ -4,8 +4,8 @@ namespace Davamigo\Infrastructure\Core\Event;
 
 use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\Event\EventBase;
-use Davamigo\Domain\Core\Event\EventConsumer;
-use Davamigo\Domain\Core\Event\EventConsumerException;
+use Davamigo\Domain\Core\EventConsumer\EventConsumer;
+use Davamigo\Domain\Core\EventConsumer\EventConsumerException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPExceptionInterface;

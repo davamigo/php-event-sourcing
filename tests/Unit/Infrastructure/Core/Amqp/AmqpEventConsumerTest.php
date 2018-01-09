@@ -4,8 +4,7 @@ namespace Test\Unit\Infrastructure\Core\Amqp;
 
 use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\Event\EventBase;
-use Davamigo\Domain\Core\Event\EventConsumer;
-use Davamigo\Domain\Core\Event\EventConsumerException;
+use Davamigo\Domain\Core\EventConsumer\EventConsumerException;
 use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Serializable\SerializableTrait;
 use Davamigo\Infrastructure\Core\Event\AmqpEventConsumer;

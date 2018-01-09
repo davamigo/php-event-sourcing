@@ -1,11 +1,11 @@
 <?php
 
-namespace Davamigo\Domain\Core\Event;
+namespace Davamigo\Domain\Core\EventConsumer;
 
 /**
  * Interface for an event consumer, which reads events from a queue.
  *
- * @package Davamigo\Domain\Core\Event
+ * @package Davamigo\Domain\Core\EventConsumer
  * @author davamigo@gmail.com
  */
 interface EventConsumer
