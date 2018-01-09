@@ -7,7 +7,7 @@ use Davamigo\Domain\Core\Event\EventBase;
 use Davamigo\Domain\Core\EventConsumer\EventConsumerException;
 use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Serializable\SerializableTrait;
-use Davamigo\Infrastructure\Core\Event\AmqpEventConsumer;
+use Davamigo\Infrastructure\Core\EventConsumer\AmqpEventConsumer;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPRuntimeException;

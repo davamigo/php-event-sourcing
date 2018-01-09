@@ -1,6 +1,6 @@
 <?php
 
-namespace Davamigo\Infrastructure\Core\Command;
+namespace Davamigo\Infrastructure\Core\CommandBus;
 
 use Davamigo\Domain\Core\Command\Command;
 use Davamigo\Domain\Core\CommandBus\CommandBus;
@@ -12,7 +12,7 @@ use Psr\Log\LoggerInterface;
 /**
  * Simple instant command bus.
  *
- * @package Davamigo\Infrastructure\Core\Command
+ * @package Davamigo\Infrastructure\Core\CommandBus
  * @author davamigo@gmail.com
  */
 class InstantCommandBus implements CommandBus

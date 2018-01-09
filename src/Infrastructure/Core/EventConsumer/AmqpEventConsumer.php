@@ -1,6 +1,6 @@
 <?php
 
-namespace Davamigo\Infrastructure\Core\Event;
+namespace Davamigo\Infrastructure\Core\EventConsumer;
 
 use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\Event\EventBase;

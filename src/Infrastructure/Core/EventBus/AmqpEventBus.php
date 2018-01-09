@@ -1,6 +1,6 @@
 <?php
 
-namespace Davamigo\Infrastructure\Core\Event;
+namespace Davamigo\Infrastructure\Core\EventBus;
 
 use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\Event\EventBase;
@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
  * Event bus implementation using AMQP (Advanced Message Queuing Protocol) which works with many queuing systems such
  * as RabbitMQ, Apache ActiveMQ and Apache Qpid.
  *
- * @package Davamigo\Infrastructure\Core\Event
+ * @package Davamigo\Infrastructure\Core\EventBus
  * @author davamigo@gmail.com
  */
 class AmqpEventBus implements EventBus
