@@ -1,13 +1,13 @@
 <?php
 
-namespace Davamigo\Infrastructure\Core\Storage;
+namespace Davamigo\Infrastructure\Core\EventStorage;
 
 use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\Event\EventBase;
 use Davamigo\Domain\Core\Serializable\SerializableException;
 use Davamigo\Domain\Core\Serializable\SerializableTrait;
-use Davamigo\Domain\Core\Storage\EventStorer;
-use Davamigo\Domain\Core\Storage\EventStorerException;
+use Davamigo\Domain\Core\EventStorage\EventStorage;
+use Davamigo\Domain\Core\EventStorage\EventStorageException;
 use Davamigo\Domain\Helpers\AutoSerializeHelper;
 use MongoDB\Client as MongoDBClient;
 use MongoDB\Exception\Exception as MongoDBException;
@@ -16,9 +16,9 @@ use Psr\Log\LoggerInterface;
 /**
  * Event storer implementation using mongoDB: The warehouse of the events
  *
- * @package Davamigo\Infrastructure\Core\Storage
+ * @package Davamigo\Infrastructure\Core\EventStorage
  */
-class MongoDBEventStorer implements EventStorer
+class MongoDBEventStorage implements EventStorage
 {
     /**
      * @var MongoDBClient
@@ -50,10 +50,10 @@ class MongoDBEventStorer implements EventStorer
      * Stores the event in the event storage
      *
      * @param Event $event
-     * @return EventStorer
-     * @throws EventStorerException
+     * @return EventStorage
+     * @throws EventStorageException
      */
-    public function storeEvent(Event $event): EventStorer
+    public function storeEvent(Event $event): EventStorage
     {
         if ($event instanceof EventBase
             && array_key_exists(SerializableTrait::class, class_uses($event))) {
@@ -70,7 +70,7 @@ class MongoDBEventStorer implements EventStorer
             $data['_id'] = $event->uuid()->toString();
         } catch (SerializableException $exc) {
             $this->logger->error('MongoDB event storer exception: error serializing the event!');
-            throw new EventStorerException('MongoDB event storer: error serializing the event!', 0, $exc);
+            throw new EventStorageException('MongoDB event storer: error serializing the event!', 0, $exc);
         }
 
         try {
@@ -79,7 +79,7 @@ class MongoDBEventStorer implements EventStorer
             $collection->insertOne($data);
         } catch (MongoDBException $exc) {
             $this->logger->error('MongoDB event storer exception: ' . get_class($exc));
-            throw new EventStorerException('MongoDB event storer: error storing an event!', 0, $exc);
+            throw new EventStorageException('MongoDB event storer: error storing an event!', 0, $exc);
         }
 
         return $this;
