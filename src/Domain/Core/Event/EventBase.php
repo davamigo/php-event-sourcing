@@ -16,6 +16,9 @@ use Davamigo\Domain\Core\Uuid\Uuid;
  */
 abstract class EventBase extends MessageBase implements Event
 {
+    /** @var string */
+    protected $action;
+
     /** @var Serializable */
     protected $payload;
 
@@ -23,31 +26,38 @@ abstract class EventBase extends MessageBase implements Event
      * EventBase constructor.
      *
      * @param string           $name
+     * @param string           $action
      * @param Serializable     $payload,
-     * @param string|null      $topic
-     * @param string|null      $routingKey
-     * @param Uuid|string|null $uuid
-     * @param \DateTime|null   $createdAt
      * @param array            $metadata
+     * @param \DateTime|null   $createdAt
+     * @param Uuid|string|null $uuid
      */
     public function __construct(
         string $name,
+        string $action,
         Serializable $payload,
-        string $topic = null,
-        string $routingKey = null,
-        $uuid = null,
+        array $metadata = [],
         \DateTime $createdAt = null,
-        array $metadata = []
+        $uuid = null
     ) {
         try {
-            parent::__construct(Message::TYPE_EVENT, $name, $uuid, $createdAt, $metadata);
+            parent::__construct(Message::TYPE_EVENT, $name, $metadata, $createdAt, $uuid);
         } catch (MessageException $exc) {
             throw new EventException($exc->getMessage(), 0, $exc);
         }
 
+        $this->action = $action;
         $this->payload = $payload;
-        $this->setTopic($topic);
-        $this->setRoutingKey($routingKey);
+    }
+
+    /**
+     * Returns the action of the event: insert/update/delete
+     *
+     * @return string
+     */
+    public function action() : string
+    {
+        return $this->action;
     }
 
     /**

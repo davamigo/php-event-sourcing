@@ -34,17 +34,17 @@ abstract class MessageBase implements Message
      *
      * @param string           $type
      * @param string           $name
-     * @param Uuid|string|null $uuid
-     * @param \DateTime|null   $createdAt
      * @param array            $metadata
+     * @param \DateTime|null   $createdAt
+     * @param Uuid|string|null $uuid
      * @throws MessageException
      */
     public function __construct(
         string $type,
         string $name,
-        $uuid = null,
+        array $metadata = [],
         \DateTime $createdAt = null,
-        array $metadata = []
+        $uuid = null
     ) {
         if (empty($type)) {
             throw new MessageException('The message has to have a type.');
@@ -54,17 +54,16 @@ abstract class MessageBase implements Message
             throw new MessageException('The message has to have a name.');
         }
 
+        $this->type = $type;
+        $this->name = $name;
+        $this->metadata = [];
+        $this->addMetadata($metadata);
+        $this->createdAt = $createdAt ?: new \DateTime();
         try {
             $this->uuid = UuidObj::createNewUuid($uuid);
         } catch (UuidException $exc) {
             throw new MessageException($exc->getMessage(), 0, $exc);
         }
-
-        $this->type = $type;
-        $this->name = $name;
-        $this->createdAt = $createdAt ?: new \DateTime();
-        $this->metadata = [];
-        $this->addMetadata($metadata);
     }
 
     /**

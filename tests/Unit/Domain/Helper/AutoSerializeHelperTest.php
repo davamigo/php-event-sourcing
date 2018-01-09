@@ -4,6 +4,7 @@ namespace Test\Unit\Domain\Helper;
 
 use Davamigo\Domain\Core\Entity\EntityBase;
 use Davamigo\Domain\Core\Serializable\Serializable;
+use Davamigo\Domain\Core\Serializable\SerializableTrait;
 use Davamigo\Domain\Core\Uuid\UuidObj;
 use Davamigo\Domain\Helpers\AutoSerializeException;
 use Davamigo\Domain\Helpers\AutoSerializeHelper;
@@ -47,7 +48,6 @@ class AutoSerializeHelperTest extends TestCase
         $result = AutoSerializeHelper::serialize($obj);
         $this->assertEquals($expected, $result);
     }
-
 
     /**
      * Test AutoSerializeHelper::serialize() an array
@@ -186,7 +186,7 @@ class AutoSerializeHelperTest extends TestCase
             public $inner;
             public function __construct()
             {
-                $this->inner = new class implements Serializable{
+                $this->inner = new class implements Serializable {
                     public static function create(array $data): Serializable
                     {
                         return new self();
@@ -243,5 +243,39 @@ class AutoSerializeHelperTest extends TestCase
         $obj = '_something_else_';
 
         AutoSerializeHelper::serialize($obj);
+    }
+
+    /**
+     * Test AutoSerializeHelper::isSerializable() for basic types
+     */
+    public function testIsSerializableBasicTypes()
+    {
+        $this->assertTrue(AutoSerializeHelper::isSerializable(101));
+        $this->assertTrue(AutoSerializeHelper::isSerializable(0xFF));
+        $this->assertTrue(AutoSerializeHelper::isSerializable(18.4));
+        $this->assertTrue(AutoSerializeHelper::isSerializable("str"));
+        $this->assertTrue(AutoSerializeHelper::isSerializable([]));
+        $this->assertTrue(AutoSerializeHelper::isSerializable(['one', 'two']));
+    }
+
+    /**
+     * Test AutoSerializeHelper::isSerializable() for serializable objects
+     */
+    public function testIsSerializableSerializableObjects()
+    {
+        $this->assertTrue(AutoSerializeHelper::isSerializable(new \DateTime()));
+        $this->assertTrue(AutoSerializeHelper::isSerializable(UuidObj::create()));
+        $this->assertTrue(AutoSerializeHelper::isSerializable(new class implements Serializable {
+            use SerializableTrait;
+        }));
+    }
+
+    /**
+     * Test AutoSerializeHelper::isSerializable() for non serializable objects
+     */
+    public function testIsSerializableNonSerializable()
+    {
+        $this->assertFalse(AutoSerializeHelper::isSerializable(new \stdClass()));
+        $this->assertFalse(AutoSerializeHelper::isSerializable(new class {}));
     }
 }

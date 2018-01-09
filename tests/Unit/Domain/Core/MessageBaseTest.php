@@ -2,7 +2,6 @@
 
 namespace Test\Unit\Domain\Core;
 
-use Davamigo\Domain\Core\Message\Message;
 use Davamigo\Domain\Core\Message\MessageBase;
 use Davamigo\Domain\Core\Message\MessageException;
 use Davamigo\Domain\Core\Serializable\SerializableTrait;
@@ -185,7 +184,7 @@ class MessageBaseTest extends TestCase
      */
     private function createMessage($type = null, $name = null, $uuid = null, $createdAt = null, $metadata = [])
     {
-        return new class($type, $name, $uuid, $createdAt, $metadata) extends MessageBase {
+        return new class($type, $name, $metadata, $createdAt, $uuid) extends MessageBase {
             use SerializableTrait;
         };
     }

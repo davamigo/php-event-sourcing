@@ -311,7 +311,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
                     use SerializableTrait;
                     public $value;
                 };
-                parent::__construct('the_event', $payload);
+                parent::__construct('the_event', 'insert', $payload);
             }
         };
 
@@ -451,7 +451,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
                     public $str = '';
                     public $int = 0;
                 };
-                parent::__construct('my_event', $payload);
+                parent::__construct('my_event', 'insert', $payload);
             }
         };
         $this->callPrivateMethod($eventConsumer, 'addSupportedEvents', [[ 'my_event' => $event ]]);
@@ -508,7 +508,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
                     public $str = '';
                     public $int = 0;
                 };
-                parent::__construct('my_event', $payload);
+                parent::__construct('my_event', 'insert', $payload);
             }
         };
         $this->callPrivateMethod($eventConsumer, 'addSupportedEvents', [[ 'my_event' => $event ]]);
@@ -551,7 +551,7 @@ class AmqpEventConsumerTest extends AmqpTestCase
                     public $str = '';
                     public $int = 0;
                 };
-                parent::__construct('my_event', $payload);
+                parent::__construct('my_event', 'insert', $payload);
             }
         };
         $this->callPrivateMethod($eventConsumer, 'addSupportedEvents', [[ 'my_event' => $event ]]);

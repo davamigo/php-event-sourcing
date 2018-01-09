@@ -137,7 +137,7 @@ class CommandBaseTest extends TestCase
      */
     private function createCommand($name = null, $payload = null, $uuid = null, $createdAt = null, $metadata = [])
     {
-        return new class($name, $payload, $uuid, $createdAt, $metadata) extends CommandBase {
+        return new class($name, $payload, $metadata, $createdAt, $uuid) extends CommandBase {
             use SerializableTrait;
         };
     }

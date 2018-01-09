@@ -24,19 +24,19 @@ abstract class CommandBase extends MessageBase implements Command
      *
      * @param string           $name
      * @param Serializable     $payload,
-     * @param Uuid|string|null $uuid
-     * @param \DateTime        $createdAt
      * @param array            $metadata
+     * @param \DateTime        $createdAt
+     * @param Uuid|string|null $uuid
      */
     public function __construct(
         string $name,
         Serializable $payload,
-        $uuid = null,
+        array $metadata = [],
         \DateTime $createdAt = null,
-        array $metadata = []
+        $uuid = null
     ) {
         try {
-            parent::__construct(Message::TYPE_COMMAND, $name, $uuid, $createdAt, $metadata);
+            parent::__construct(Message::TYPE_COMMAND, $name, $metadata, $createdAt, $uuid);
         } catch (MessageException $exc) {
             throw new CommandException($exc->getMessage(), 0, $exc);
         }

@@ -58,9 +58,9 @@ class CreateAuthorTest extends TestCase
 
         $command = new CreateAuthor(
             $author,
-            '6d0350c9-888c-4234-8410-afc516cd82a0',
+            [ 'routing_key' => CreateAuthor::class ],
             \DateTime::createFromFormat('YmdHis', '20100102100001'),
-            [ 'routing_key' => CreateAuthor::class ]
+            '6d0350c9-888c-4234-8410-afc516cd82a0'
         );
 
         $expected = [

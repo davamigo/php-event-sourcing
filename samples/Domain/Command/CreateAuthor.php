@@ -20,19 +20,19 @@ class CreateAuthor extends CommandBase
      * CreateAuthor constructor.
      *
      * @param AuthorBase|null $author
-     * @param Uuid|string|null $uuid
-     * @param \DateTime        $createdAt
      * @param array            $metadata
+     * @param \DateTime        $createdAt
+     * @param Uuid|string|null $uuid
      */
     public function __construct(
         AuthorBase $author = null,
-        $uuid = null,
+        array $metadata = [],
         \DateTime $createdAt = null,
-        array $metadata = []
+        $uuid = null
     ) {
         $name = self::class;
         $author = $author ?: new AuthorCustom();
-        parent::__construct($name, $author, $uuid, $createdAt, $metadata);
+        parent::__construct($name, $author, $metadata, $createdAt, $uuid);
     }
 
     /**

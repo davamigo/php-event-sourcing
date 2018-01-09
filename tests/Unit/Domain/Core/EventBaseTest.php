@@ -34,19 +34,15 @@ class EventBaseTest extends TestCase
             use SerializableTrait;
         };
 
-        $metadata = [
-            'topic' => null,
-            'routing_key' => null
-        ];
-
-        $event = $this->createEvent('event_name', $entity);
+        $event = $this->createEvent('event_name', 'insert', $entity);
 
         $this->assertEquals('event', $event->type());
+        $this->assertEquals('insert', $event->action());
         $this->assertEquals('event_name', $event->name());
         $this->assertEquals($entity, $event->payload());
         $this->assertInstanceOf(Uuid::class, $event->uuid());
         $this->assertInstanceOf(\DateTime::class, $event->createdAt());
-        $this->assertEquals($metadata, $event->metadata());
+        $this->assertEquals([], $event->metadata());
         $this->assertNull($event->topic());
         $this->assertNull($event->routingKey());
     }
@@ -70,21 +66,22 @@ class EventBaseTest extends TestCase
 
         $event = $this->createEvent(
             'the_name',
+            'update',
             $serializable,
-            'the_topic',
-            'the_routing_key',
             'baf44167-95f1-44d3-b9fd-645b5f05dd9d',
             \DateTime::createFromFormat('d-m-Y', '20-02-2002'),
             [ 'a' => 1, 'b' => 2, 'c' => 3 ]
         );
+        $event->setTopic('the_topic');
+        $event->setRoutingKey('the_routing_key');
 
+        $this->assertEquals('event', $event->type());
+        $this->assertEquals('update', $event->action());
         $this->assertEquals('the_name', $event->name());
         $this->assertEquals($serializable, $event->payload());
         $this->assertEquals('baf44167-95f1-44d3-b9fd-645b5f05dd9d', $event->uuid()->toString());
         $this->assertEquals('20-02-2002', $event->createdAt()->format('d-m-Y'));
         $this->assertEquals($metadata, $event->metadata());
-        $this->assertEquals('the_topic', $event->topic());
-        $this->assertEquals('the_routing_key', $event->routingKey());
     }
 
     /**
@@ -98,16 +95,15 @@ class EventBaseTest extends TestCase
             use SerializableTrait;
         };
 
-        $this->createEvent('', $serializable);
+        $this->createEvent('', 'insert', $serializable);
     }
 
     /**
      * Returns a new EventBase object
      *
      * @param $name
+     * @param $action
      * @param $payload
-     * @param $topic
-     * @param $routingKey
      * @param $uuid
      * @param $createdAt
      * @param $metadata
@@ -115,14 +111,13 @@ class EventBaseTest extends TestCase
      */
     private function createEvent(
         $name = null,
+        $action = null,
         $payload = null,
-        $topic = null,
-        $routingKey = null,
         $uuid = null,
         $createdAt = null,
         $metadata = []
     ) {
-        return new class($name, $payload, $topic, $routingKey, $uuid, $createdAt, $metadata) extends EventBase {
+        return new class($name, $action, $payload, $metadata, $createdAt, $uuid) extends EventBase {
             use SerializableTrait;
         };
     }

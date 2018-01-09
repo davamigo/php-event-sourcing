@@ -18,6 +18,20 @@ use Davamigo\Domain\Core\Serializable\Serializable;
 interface Event extends Message
 {
     /**
+     * Valid actions for the event
+     */
+    const ACTION_INSERT = 'insert';
+    const ACTION_UPDATE = 'update';
+    const ACTION_DELETE = 'delete';
+
+    /**
+     * Returns the action of the event: insert/update/delete
+     *
+     * @return string
+     */
+    public function action() : string;
+
+    /**
      * Returns the payload of the event which is a serializable object.
      *
      * @return Serializable

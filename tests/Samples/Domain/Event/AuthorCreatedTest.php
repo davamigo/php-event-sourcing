@@ -46,19 +46,6 @@ class AuthorCreatedTest extends TestCase
     }
 
     /**
-     * Test advanced constructor of AuthorCreated event
-     */
-    public function testAdvancedConstructor()
-    {
-        $author = new AuthorCustom();
-        $event = new AuthorCreated($author, 'the_topic', 'the_routing_key');
-
-        $this->assertEquals($author, $event->payload());
-        $this->assertEquals('the_topic', $event->topic());
-        $this->assertEquals('the_routing_key', $event->routingKey());
-    }
-
-    /**
      * Test serialize of AuthorCreated event
      */
     public function testSerialize()
@@ -71,15 +58,17 @@ class AuthorCreatedTest extends TestCase
 
         $event = new AuthorCreated(
             $author,
-            AuthorBase::class,
-            'insert',
-            '6d0350c9-888c-4234-8410-afc516cd82a0',
-            \DateTime::createFromFormat('YmdHis', '20100102100001')
+            [],
+            \DateTime::createFromFormat('YmdHis', '20100102100001'),
+            '6d0350c9-888c-4234-8410-afc516cd82a0'
         );
+        $event->setTopic('101');
+        $event->setRoutingKey('102');
 
         $expected = [
             'uuid'          => '6d0350c9-888c-4234-8410-afc516cd82a0',
             'type'          => 'event',
+            'action'        => 'insert',
             'name'          => AuthorCreated::class,
             'createdAt'     => '2010-01-02T10:00:01+00:00',
             'payload'       => [
@@ -88,8 +77,8 @@ class AuthorCreatedTest extends TestCase
                 'lastName'      => 'author_last_name'
             ],
             'metadata'      => [
-                'topic'         => AuthorBase::class,
-                'routing_key'   => 'insert'
+                'topic'         => '101',
+                'routing_key'   => '102'
             ]
         ];
 

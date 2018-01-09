@@ -66,9 +66,11 @@ class AmqpEventBusTest extends AmqpTestCase
             use SerializableTrait;
         };
 
-        $event = new class ('name', $payload, 'topic', 'key') extends EventBase {
+        $event = new class ('name', 'insert', $payload) extends EventBase {
             use SerializableTrait;
         };
+        $event->setTopic('101');
+        $event->setRoutingKey('102');
 
         // Create test object
         $eventBus = new AmqpEventBus($connection, new NullLogger());
@@ -98,7 +100,7 @@ class AmqpEventBusTest extends AmqpTestCase
             use SerializableTrait;
         };
 
-        $event = new class ('name', $payload, '', 'key') extends EventBase {
+        $event = new class ('name', 'update', $payload) extends EventBase {
             use SerializableTrait;
         };
 
@@ -126,7 +128,7 @@ class AmqpEventBusTest extends AmqpTestCase
             use SerializableTrait;
         };
 
-        $event = new class ('name', $payload, '', 'key') extends EventBase {
+        $event = new class ('name', 'insert', $payload) extends EventBase {
             use SerializableTrait;
         };
 
@@ -163,7 +165,7 @@ class AmqpEventBusTest extends AmqpTestCase
             use SerializableTrait;
         };
 
-        $event = new class ('name', $payload, 'topic', 'key') extends EventBase {
+        $event = new class ('name', 'insert', $payload) extends EventBase {
             use SerializableTrait;
         };
 
@@ -192,7 +194,6 @@ class AmqpEventBusTest extends AmqpTestCase
 
         /** @var AMQPStreamConnection $connection */
         $connection = $connectionMock;
-
 
         // Create test object
         $eventBus = new AmqpEventBus($connection, new NullLogger());
@@ -241,9 +242,12 @@ class AmqpEventBusTest extends AmqpTestCase
             use SerializableTrait;
         };
 
-        $event = new class ('the_name', $payload, 'a_topic', 'some_key') extends EventBase {
+        $event = new class ('the_name', 'insert', $payload) extends EventBase {
             use SerializableTrait;
         };
+
+        $event->setTopic('a_topic');
+        $event->setRoutingKey('some_key');
 
         $metadata = [
             'topic' => 'a_topic',
@@ -320,7 +324,6 @@ class AmqpEventBusTest extends AmqpTestCase
             'delivery_mode' => 2
         ];
 
-
         // Create test object
         $eventBus = new AmqpEventBus($connection, new NullLogger());
 
@@ -350,7 +353,6 @@ class AmqpEventBusTest extends AmqpTestCase
             'delivery_mode' => 1,
             'another_topic' => 2
         ];
-
 
         // Create test object
         $eventBus = new AmqpEventBus($connection, new NullLogger());
