@@ -105,7 +105,7 @@ class MongoDBEventStorage implements EventStorage
             $metadata = $event->metadata();
             foreach ($metadata as $key => $item) {
                 if (!AutoSerializeHelper::isSerializable($item)) {
-                    $event->addMetadata([ $key => (array) $item]);
+                    $event->addMetadata([ $key => get_class($item) . '::class']);
                 }
             }
         }
