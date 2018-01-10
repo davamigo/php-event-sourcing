@@ -23,12 +23,4 @@ interface Command extends Message
      * @return Serializable
      */
     public function payload();
-
-    /**
-     * Return the command handler class names for this command. For example: 'Samples\Domain\Command\CreateAutor' or
-     * [ CreateAuthorInsert::class, CreateAuthorSendMail::class ]
-     *
-     * @return string[]|string|null
-     */
-    public function commandHandlers();
 }

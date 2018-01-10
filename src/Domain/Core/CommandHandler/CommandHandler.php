@@ -13,6 +13,13 @@ use Davamigo\Domain\Core\Command\Command;
 interface CommandHandler
 {
     /**
+     * Return the names of the commands who handle this command handler
+     *
+     * @return string[]|string|null
+     */
+    public function handledCommands();
+
+    /**
      * Handles a command.
      *
      * @param Command $command

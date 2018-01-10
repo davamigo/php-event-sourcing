@@ -47,6 +47,10 @@ class InstantCommandBusTest extends TestCase
     public function testRegularConstructor()
     {
         $commandHandler = new class implements CommandHandler {
+            public function handledCommands()
+            {
+                return null;
+            }
             public function handle(Command $command): void
             {
             }
@@ -71,12 +75,20 @@ class InstantCommandBusTest extends TestCase
     public function testAddHandler()
     {
         $commandHandler1 = new class implements CommandHandler {
+            public function handledCommands()
+            {
+                return null;
+            }
             public function handle(Command $command): void
             {
             }
         };
 
         $commandHandler2 = new class implements CommandHandler {
+            public function handledCommands()
+            {
+                return null;
+            }
             public function handle(Command $command): void
             {
             }
@@ -142,6 +154,10 @@ class InstantCommandBusTest extends TestCase
             {
                 $this->handleCalled = true;
             }
+            public function handledCommands()
+            {
+                return 'command';
+            }
         };
 
         $command = new class extends CommandBase {
@@ -151,10 +167,6 @@ class InstantCommandBusTest extends TestCase
                 parent::__construct('command', new class implements Serializable {
                     use SerializableTrait;
                 });
-            }
-            public function commandHandlers()
-            {
-                return 'commandHandler';
             }
         };
 
@@ -216,6 +228,10 @@ class InstantCommandBusTest extends TestCase
             {
                 $this->handleCalled = true;
             }
+            public function handledCommands()
+            {
+                return null;
+            }
         };
 
         $command = new class extends CommandBase {
@@ -239,7 +255,79 @@ class InstantCommandBusTest extends TestCase
     }
 
     /**
-     * Test dispath function when invalid command throws an exception
+     * Test dispatch when the handler is not in the command
+     */
+    public function testDispatchWhenManyHandlersPerCommand()
+    {
+        $commandHandler1 = new class implements CommandHandler {
+            public $handleCalled = false;
+            public function handle(Command $command): void
+            {
+                $this->handleCalled = true;
+            }
+            public function handledCommands()
+            {
+                return [
+                    'command',
+                    'command2'
+                ];
+            }
+        };
+
+        $commandHandler2 = new class implements CommandHandler {
+            public $handleCalled = false;
+            public function handle(Command $command): void
+            {
+                $this->handleCalled = true;
+            }
+            public function handledCommands()
+            {
+                return 'command';
+            }
+        };
+
+        $commandHandler3 = new class implements CommandHandler {
+            public $handleCalled = false;
+            public function handle(Command $command): void
+            {
+                $this->handleCalled = true;
+            }
+            public function handledCommands()
+            {
+                return null;
+            }
+        };
+
+        $command = new class extends CommandBase {
+            use SerializableTrait;
+            public function __construct()
+            {
+                parent::__construct('command', new class implements Serializable {
+                    use SerializableTrait;
+                });
+            }
+        };
+
+        $logger = new NullLogger();
+
+        $commandHandlerCollection = [
+            $commandHandler1,
+            $commandHandler2,
+            $commandHandler3
+        ];
+
+        $commandBus = new InstantCommandBus($commandHandlerCollection, $logger);
+        $commandBus->addCommand($command);
+        $commandBus->dispatch();
+
+        $this->assertEquals([], $this->getPrivateProperty($commandBus, 'commands'));
+        $this->assertTrue($commandHandler1->handleCalled);
+        $this->assertTrue($commandHandler2->handleCalled);
+        $this->assertFalse($commandHandler3->handleCalled);
+    }
+
+    /**
+     * Test dispatch function when invalid command throws an exception
      */
     public function testDispatchWhenInvalidCommandHandlerThrowsAnException()
     {
@@ -251,37 +339,15 @@ class InstantCommandBusTest extends TestCase
                     use SerializableTrait;
                 });
             }
-            public function commandHandlers()
+        };
+
+        $commandHandler = new class implements CommandHandler {
+            public function handledCommands()
             {
                 return new \stdClass();
             }
-        };
-
-        $this->expectException(CommandBusException::class);
-
-        $logger = new NullLogger();
-
-        $commandBus = new InstantCommandBus([], $logger);
-        $commandBus->addCommand($command);
-        $commandBus->dispatch();
-    }
-
-    /**
-     * Test dispath function when command not found throws an exception
-     */
-    public function testDispatchWhenCommandHandlerNotFoundThrowsAnException()
-    {
-        $command = new class extends CommandBase {
-            use SerializableTrait;
-            public function __construct()
+            public function handle(Command $command): void
             {
-                parent::__construct('command', new class implements Serializable {
-                    use SerializableTrait;
-                });
-            }
-            public function commandHandlers()
-            {
-                return 'commandHandler';
             }
         };
 
@@ -289,17 +355,21 @@ class InstantCommandBusTest extends TestCase
 
         $logger = new NullLogger();
 
-        $commandBus = new InstantCommandBus([], $logger);
+        $commandBus = new InstantCommandBus([ $commandHandler ], $logger);
         $commandBus->addCommand($command);
         $commandBus->dispatch();
     }
 
     /**
-     * Test dispath function when command handler throws an exception
+     * Test dispatch function when command handler throws an exception
      */
     public function testDispatchWhenCommandHandlerThrowsAnException()
     {
         $commandHandler = new class implements CommandHandler {
+            public function handledCommands()
+            {
+                return 'command';
+            }
             public function handle(Command $command): void
             {
                 throw new CommandHandlerException();
@@ -313,10 +383,6 @@ class InstantCommandBusTest extends TestCase
                 parent::__construct('command', new class implements Serializable {
                     use SerializableTrait;
                 });
-            }
-            public function commandHandlers()
-            {
-                return 'commandHandler';
             }
         };
 

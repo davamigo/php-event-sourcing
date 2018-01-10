@@ -39,7 +39,6 @@ class CommandBaseTest extends TestCase
         $this->assertEquals('command', $command->type());
         $this->assertEquals('command_name', $command->name());
         $this->assertEquals($entity, $command->payload());
-        $this->assertNull($command->commandHandlers());
         $this->assertInstanceOf(Uuid::class, $command->uuid());
         $this->assertInstanceOf(\DateTime::class, $command->createdAt());
         $this->assertInternalType('array', $command->metadata());

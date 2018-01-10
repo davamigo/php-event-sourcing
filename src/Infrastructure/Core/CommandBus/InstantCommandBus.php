@@ -109,25 +109,23 @@ class InstantCommandBus implements CommandBus
      */
     private function getCommandHandlers(Command $command) : array
     {
-        $commandHandlerNames = $command->commandHandlers();
-        if (null === $commandHandlerNames) {
-            $commandHandlerNames = [];
-        } elseif (is_string($commandHandlerNames)) {
-            $commandHandlerNames = [ $commandHandlerNames ];
-        } elseif (!is_array($commandHandlerNames)) {
-            $msg = 'Command ' . $command->name() . ' has a invalid handler!';
-            $this->error($msg);
-            throw new CommandBusException($msg);
-        }
-
         $commandHandlers = [];
-        foreach ($commandHandlerNames as $handlerName) {
-            if (!array_key_exists($handlerName, $this->handlers)) {
-                $msg = 'Handler ' . $handlerName . ' for command ' . $command->name() . ' not found!';
+        foreach ($this->handlers as $handler) {
+            $commandNames = $handler->handledCommands();
+            if (null === $commandNames) {
+                $commandNames = [];
+            } elseif (is_string($commandNames)) {
+                $commandNames = [ $commandNames ];
+            } elseif (!is_array($commandNames)) {
+                $msg = 'Command ' . $command->name() . ' has a invalid handlers!';
                 $this->error($msg);
                 throw new CommandBusException($msg);
-            } else {
-                $commandHandlers[] = $this->handlers[$handlerName];
+            }
+
+            foreach ($commandNames as $commandName) {
+                if ($commandName == $command->name()) {
+                    $commandHandlers[] = $handler;
+                }
             }
         }
 
