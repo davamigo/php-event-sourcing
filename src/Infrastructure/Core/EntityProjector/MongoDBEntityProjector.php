@@ -124,12 +124,15 @@ class MongoDBEntityProjector implements EntityProjector
             throw new EntityProjectorErrorException('EntityProjector error: Unknown event!');
         }
 
+        $metadata = $eventData['metadata'] ?? [];
+        unset($eventData['metadata']);
+        unset($eventData['_id']);
+
         /** @var Event $event */
         $event = call_user_func($eventClass . '::create', $eventData);
         if ($event instanceof EventBase) {
-            $event->addMetadata($eventData['metadata'] ?? []);
+            $event->addMetadata($metadata);
         }
-
 
         /** @var Entity $entity */
         $entity = $event->payload();
