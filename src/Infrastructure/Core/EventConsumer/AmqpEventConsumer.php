@@ -207,10 +207,6 @@ class AmqpEventConsumer implements EventConsumer
      */
     public function addSupportedEvents($events) : void
     {
-        if ($events instanceof EventCollection) {
-            $events = $events->toArray();
-        }
-
         foreach ($events as $name => $event) {
             $eventName = null;
             $eventClass = null;

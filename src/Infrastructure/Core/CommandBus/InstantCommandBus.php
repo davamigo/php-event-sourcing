@@ -29,10 +29,10 @@ class InstantCommandBus implements CommandBus
     /**
      * InstantCommandBus constructor.
      *
-     * @param array $handlers
+     * @param iterable $handlers
      * @param LoggerInterface $logger
      */
-    public function __construct(array $handlers = [], LoggerInterface $logger = null)
+    public function __construct(iterable $handlers = [], LoggerInterface $logger = null)
     {
         $this->handlers = [];
         $this->commands = [];
