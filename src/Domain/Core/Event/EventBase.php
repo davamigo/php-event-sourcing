@@ -47,7 +47,7 @@ abstract class EventBase extends MessageBase implements Event
         }
 
         $this->action = $action;
-        $this->payload = $payload;
+        $this->payload = clone $payload;
     }
 
     /**

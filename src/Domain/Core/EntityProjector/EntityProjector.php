@@ -1,6 +1,7 @@
 <?php
 
 namespace Davamigo\Domain\Core\EntityProjector;
+
 use Davamigo\Domain\Core\Entity\Entity;
 use Davamigo\Domain\Core\Uuid\Uuid;
 
@@ -18,6 +19,8 @@ interface EntityProjector
      * @param Uuid  $uuid
      * @param array $options
      * @return Entity
+     * @throws EntityProjectorNotFoundException
+     * @throws EntityProjectorErrorException
      */
     public function findEntity(Uuid $uuid, array $options = []) : Entity;
 }

@@ -41,7 +41,7 @@ abstract class CommandBase extends MessageBase implements Command
             throw new CommandException($exc->getMessage(), 0, $exc);
         }
 
-        $this->payload = $payload;
+        $this->payload = clone $payload;
     }
 
     /**
