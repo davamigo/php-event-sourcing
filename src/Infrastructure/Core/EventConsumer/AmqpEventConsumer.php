@@ -4,6 +4,7 @@ namespace Davamigo\Infrastructure\Core\EventConsumer;
 
 use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\Event\EventBase;
+use Davamigo\Domain\Core\Event\EventCollection;
 use Davamigo\Domain\Core\EventConsumer\EventConsumer;
 use Davamigo\Domain\Core\EventConsumer\EventConsumerException;
 use Davamigo\Infrastructure\Core\Helpers\AmqpConfigurator;
@@ -101,17 +102,17 @@ class AmqpEventConsumer implements EventConsumer
     /**
      * AmqpEventBus constructor.
      *
-     * @param AMQPStreamConnection $connection AMQ Connection object
-     * @param AmqpConfigurator     $config     Configuration object
-     * @param Event[]              $events     List of supported events
-     * @param LoggerInterface      $logger     Monolog object
-     * @param array                $options    Configuration options
+     * @param AMQPStreamConnection             $connection AMQ Connection object
+     * @param AmqpConfigurator                 $config     Configuration object
+     * @param EventCollection|Event[]|iterable $events     List of supported events
+     * @param LoggerInterface                  $logger     Monolog object
+     * @param array                            $options    Configuration options
      * @throws EventConsumerException
      */
     public function __construct(
         AMQPStreamConnection $connection,
         AmqpConfigurator $config,
-        array $events,
+        $events,
         LoggerInterface $logger,
         array $options = []
     ) {
@@ -200,12 +201,16 @@ class AmqpEventConsumer implements EventConsumer
      * $events = [ 'event_name' => Event ]
      * $events = [ 'event_name' => 'event_clas_name' ]
      *
-     * @param array $events Supported events list
+     * @param EventCollection|Event[]|iterable $events List of supported events
      * @return void
      * @throws EventConsumerException
      */
-    public function addSupportedEvents(array $events) : void
+    public function addSupportedEvents($events) : void
     {
+        if ($events instanceof EventCollection) {
+            $events = $events->toArray();
+        }
+
         foreach ($events as $name => $event) {
             $eventName = null;
             $eventClass = null;
