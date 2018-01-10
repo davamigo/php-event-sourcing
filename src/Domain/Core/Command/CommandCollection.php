@@ -21,6 +21,7 @@ class CommandCollection implements \Iterator
      */
     public function __construct(iterable $commands)
     {
+        $this->commands = [];
         foreach ($commands as $name => $command) {
             if (!$command instanceof Command) {
                 throw new CommandException('The items must be an instance of ' . Command::class);

@@ -21,7 +21,7 @@ class EventCollection implements \Iterator
      */
     public function __construct(iterable $events)
     {
-        /** @var Event $event */
+        $this->events = [];
         foreach ($events as $name => $event) {
             if (!$event instanceof Event) {
                 throw new EventException('The items must be an instance of ' . Event::class);

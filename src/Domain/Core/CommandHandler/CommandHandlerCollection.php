@@ -21,6 +21,7 @@ class CommandHandlerCollection implements \Iterator
      */
     public function __construct(iterable $handlers)
     {
+        $this->handlers = [];
         foreach ($handlers as $name => $handler) {
             if (!$handler instanceof CommandHandler) {
                 throw new CommandHandlerException('The items must be an instance of ' . CommandHandler::class);
