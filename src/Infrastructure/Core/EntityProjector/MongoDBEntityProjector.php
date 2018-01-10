@@ -92,8 +92,6 @@ class MongoDBEntityProjector implements EntityProjector
             ], [
                 'sort' => ['createdAt' => 1]
             ]);
-
-            var_dump($cursor);
         } catch (MongoDBException $exc) {
             $this->logger->error('EntityProjector exception: ' . get_class($exc));
             throw new EntityProjectorErrorException('EntityProjector: MongoDB error executing the query!', 0, $exc);
