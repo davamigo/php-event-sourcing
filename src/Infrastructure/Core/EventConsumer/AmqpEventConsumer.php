@@ -158,12 +158,14 @@ class AmqpEventConsumer implements EventConsumer
                 $this->logger->error(
                     'EventConsumer::channel->wait() error - ' . get_class($exc) . ' - ' . $exc->getMessage()
                 );
+                $this->logger->debug($exc);
                 $errorOccurred = true;
             } catch (\Exception $exc) {
                 // Generic exception
                 $this->logger->critical(
                     'EventConsumer::channel->wait() critical - ' . get_class($exc) . ' - ' . $exc->getMessage()
                 );
+                $this->logger->debug($exc);
                 $errorOccurred = true;
             }
 
@@ -319,6 +321,7 @@ class AmqpEventConsumer implements EventConsumer
             $this->logger->warning(
                 'EventConsumer - Error procesing an event: ' . get_class($exc) . ' - ' . $exc->getMessage()
             );
+            $this->logger->debug($exc);
 
             // Requeue message for further action by sending NACK
             $this->sendNack($msg);
@@ -403,6 +406,8 @@ class AmqpEventConsumer implements EventConsumer
             $this->logger->warning(
                 'EventConsumer - Error sending ACK for an event: ' . get_class($exc) . ' - ' . $exc->getMessage()
             );
+            $this->logger->debug($exc);
+
             throw new EventConsumerException('EventConsumer - Error sending ACK for an event', 0, $exc);
         }
     }
@@ -427,6 +432,8 @@ class AmqpEventConsumer implements EventConsumer
             $this->logger->warning(
                 'EventConsumer - Error sending NACK for an event: ' . get_class($exc) . ' - ' . $exc->getMessage()
             );
+            $this->logger->debug($exc);
+
             throw new EventConsumerException('EventConsumer - Error sending NACK for an event', 0, $exc);
         }
     }
@@ -469,6 +476,8 @@ class AmqpEventConsumer implements EventConsumer
                 $this->logger->error(
                     'EventConsumer::connection->reconnect() - ' . get_class($exc) . ' - ' . $exc->getMessage()
                 );
+                $this->logger->debug($exc);
+
                 if ($attempts > 0 && $this->restartWaitTime > 0) {
                     $this->logger->info('EventConsumer - Waiting ' . $this->restartWaitTime . ' seconds...');
                     $this->sleep($this->restartWaitTime);

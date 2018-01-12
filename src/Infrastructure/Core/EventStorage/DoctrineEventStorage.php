@@ -97,11 +97,15 @@ class DoctrineEventStorage implements EventStorage
 
             $this->manager->flush();
         } catch (ORMException $exc) {
-            $this->logger->debug($exc->getMessage());
-            throw new EventStorageException('An error occurred in Doctrine while processing an event', 0, $exc);
+            $error = 'An error occurred in Doctrine while processing an event';
+            $this->logger->error($error . ' - ' . $exc->getMessage());
+            $this->logger->debug($exc);
+            throw new EventStorageException($error, 0, $exc);
         } catch (ORMInvalidArgumentException $exc) {
-            $this->logger->debug($exc->getMessage());
-            throw new EventStorageException('An error occurred in Doctrine while processing an event', 0, $exc);
+            $error = 'An error occurred in Doctrine while processing an event';
+            $this->logger->error($error . ' - ' . $exc->getMessage());
+            $this->logger->debug($exc);
+            throw new EventStorageException($error, 0, $exc);
         }
 
         return $this;
@@ -119,7 +123,10 @@ class DoctrineEventStorage implements EventStorage
         try {
             $ormEntities = $this->manager->getConfiguration()->getMetadataDriverImpl()->getAllClassNames();
         } catch (ORMException $exc) {
-            throw new EventStorageException('Error retrieving the Doctrine ORM entities!');
+            $error = 'Error retrieving the Doctrine ORM entities';
+            $this->logger->error($error . ' - ' . $exc->getMessage());
+            $this->logger->debug($exc);
+            throw new EventStorageException($error, 0, $exc);
         }
 
         foreach ($ormEntities as $ormFullEntityName) {
@@ -133,6 +140,9 @@ class DoctrineEventStorage implements EventStorage
             }
         }
 
-        throw new EventStorageException('Entity ' . $entityName . ' not found as Doctrine entity!');
+        $error = 'Entity ' . $entityName . ' not found as Doctrine entity';
+        $this->logger->error($error);
+
+        throw new EventStorageException($error);
     }
 }

@@ -72,8 +72,10 @@ class MongoDBEventStorage implements EventStorage
             $collection = $database->selectCollection($this->config->getDefaultCollection());
             $collection->insertOne($data);
         } catch (MongoDBException $exc) {
-            $this->logger->error('MongoDB event storer exception: ' . get_class($exc));
-            throw new EventStorageException('MongoDB event storer: error storing an event!', 0, $exc);
+            $this->logger->error('MongoDB event storage exception: ' . $exc->getMessage());
+            $this->logger->debug($exc);
+
+            throw new EventStorageException('MongoDB event storage: error storing an event!', 0, $exc);
         }
 
         return $this;
@@ -103,8 +105,10 @@ class MongoDBEventStorage implements EventStorage
         try {
             $data = $event->serialize();
         } catch (SerializableException $exc) {
-            $this->logger->error('MongoDB event storer exception: error serializing the event!');
-            throw new EventStorageException('MongoDB event storer: error serializing the event!', 0, $exc);
+            $this->logger->error('MongoDB event storage: error serializing the event - ' . $exc->getMessage());
+            $this->logger->debug($exc);
+
+            throw new EventStorageException('MongoDB event storage: error serializing the event!', 0, $exc);
         }
 
         return $data;
