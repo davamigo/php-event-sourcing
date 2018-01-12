@@ -76,12 +76,13 @@ class DoctrineEventStorage implements EventStorage
             switch ($event->action()) {
                 case Event::ACTION_INSERT:
                     $ormEntity = new $ormFullEntityName();
-                    call_user_func($ormEntity, 'fromDomainEntity', $entity);
+                    $ormEntity->fromDomainEntity($entity);
                     $this->manager->persist($ormEntity);
                     break;
 
                 case Event::ACTION_UPDATE:
                     $ormEntity = $this->manager->find($ormFullEntityName, $entity->uuid());
+                    $ormEntity->fromDomainEntity($entity);
                     $this->manager->persist($ormEntity);
                     break;
 
