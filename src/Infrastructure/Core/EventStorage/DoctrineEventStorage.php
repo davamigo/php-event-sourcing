@@ -6,7 +6,7 @@ use Davamigo\Domain\Core\Entity\Entity;
 use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\EventStorage\EventStorage;
 use Davamigo\Domain\Core\EventStorage\EventStorageException;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -21,9 +21,9 @@ class DoctrineEventStorage implements EventStorage
     /**
      * The EntityManager is the central access point to Doctrine ORM functionality
      *
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
-    protected $manager;
+    protected $manager = null;
 
     /**
      * The monolog object to log events
@@ -31,6 +31,20 @@ class DoctrineEventStorage implements EventStorage
      * @var LoggerInterface
      */
     protected $logger = null;
+
+    /**
+     * MongoDBEventStorer constructor.
+     *
+     * @param EntityManagerInterface $manager The entity manager from Doctrine
+     * @param LoggerInterface        $logger  Monolog object
+     */
+    public function __construct(
+        EntityManagerInterface $manager,
+        LoggerInterface $logger
+    ) {
+        $this->manager = $manager;
+        $this->logger = $logger;
+    }
 
     /**
      * Stores the event in the event storage
