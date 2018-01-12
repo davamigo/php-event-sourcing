@@ -15,7 +15,7 @@ use MongoDB\Exception\Exception as MongoDBException;
 use Psr\Log\LoggerInterface;
 
 /**
- * Event storer implementation using mongoDB: The warehouse of the events
+ * Event storage implementation using mongoDB: The warehouse of the events
  *
  * @package Davamigo\Infrastructure\Core\EventStorage
  */
