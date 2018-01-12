@@ -81,7 +81,7 @@ class DoctrineEventStorage implements EventStorage
                     break;
 
                 case Event::ACTION_UPDATE:
-                    $ormEntity = $this->manager->find($ormFullEntityName, $entity->uuid());
+                    $ormEntity = $this->manager->find($ormFullEntityName, $entity->uuid()->toString());
                     $ormEntity->fromDomainEntity($entity);
                     $this->manager->persist($ormEntity);
                     break;
