@@ -97,8 +97,10 @@ class DoctrineEventStorage implements EventStorage
 
             $this->manager->flush();
         } catch (ORMException $exc) {
+            $this->logger->debug($exc->getMessage());
             throw new EventStorageException('An error occurred in Doctrine while processing an event', 0, $exc);
         } catch (ORMInvalidArgumentException $exc) {
+            $this->logger->debug($exc->getMessage());
             throw new EventStorageException('An error occurred in Doctrine while processing an event', 0, $exc);
         }
 
