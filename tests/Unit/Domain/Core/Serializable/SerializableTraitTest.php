@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Unit\Domain\Core;
+namespace Test\Unit\Domain\Core\Serializable;
 
 use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Serializable\SerializableException;

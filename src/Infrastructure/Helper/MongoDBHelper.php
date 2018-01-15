@@ -18,19 +18,12 @@ class MongoDBHelper
      *
      * @param Cursor $cursor
      * @return array
+     * @codeCoverageIgnore
      */
     final public static function cursorToArray(Cursor $cursor) : array
     {
-        $result = [];
         $data = $cursor->toArray();
-        foreach ($data as $key => $item) {
-            if ($item instanceof BSONDocument) {
-                $result[$key] = self::bsonDocumentToArray($item);
-            } else {
-                $result[$key] = $item;
-            }
-        }
-        return $result;
+        return self::parse($data);
     }
 
     /**
@@ -41,8 +34,19 @@ class MongoDBHelper
      */
     final public static function bsonDocumentToArray(BSONDocument $document) : array
     {
-        $result = [];
         $data = $document->getArrayCopy();
+        return self::parse($data);
+    }
+
+    /**
+     * Parses array data to convert BSON objects to array
+     *
+     * @param array $data
+     * @return array
+     */
+    final private static function parse(array $data) : array
+    {
+        $result= [];
         foreach ($data as $key => $item) {
             if ($item instanceof BSONDocument) {
                 $result[$key] = self::bsonDocumentToArray($item);

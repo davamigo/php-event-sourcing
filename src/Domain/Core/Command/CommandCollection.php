@@ -24,7 +24,9 @@ class CommandCollection implements \Iterator
         $this->commands = [];
         foreach ($commands as $name => $command) {
             if (!$command instanceof Command) {
-                throw new CommandException('The items must be an instance of ' . Command::class);
+                throw new CommandException(
+                    'CommandCollection: The items must be an instance of ' . Command::class
+                );
             }
             if (is_numeric($name)) {
                 $name = get_class($command);
@@ -57,12 +59,12 @@ class CommandCollection implements \Iterator
     /**
      * Move forward to next element
      * @link http://php.net/manual/en/iterator.next.php
-     * @return void Any returned value is ignored.
+     * @return mixed Can return any type.
      * @since 5.0.0
      */
     public function next()
     {
-        next($this->commands);
+        return next($this->commands);
     }
 
     /**
@@ -91,11 +93,11 @@ class CommandCollection implements \Iterator
     /**
      * Rewind the Iterator to the first element
      * @link http://php.net/manual/en/iterator.rewind.php
-     * @return void Any returned value is ignored.
+     * @return mixed Can return any type.
      * @since 5.0.0
      */
     public function rewind()
     {
-        reset($this->commands);
+        return reset($this->commands);
     }
 }

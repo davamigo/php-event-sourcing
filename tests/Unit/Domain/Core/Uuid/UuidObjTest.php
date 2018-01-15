@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Unit\Domain\Core;
+namespace Test\Unit\Domain\Core\Uuid;
 
 use Davamigo\Domain\Core\Uuid\UuidException;
 use Davamigo\Domain\Core\Uuid\UuidObj;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Unit\Infrastructure\Core;
+namespace Test\Unit\Infrastructure\Core\CommandBus;
 
 use Davamigo\Domain\Core\Command\Command;
 use Davamigo\Domain\Core\Command\CommandBase;
@@ -10,13 +10,13 @@ use Davamigo\Domain\Core\CommandHandler\CommandHandlerException;
 use Davamigo\Infrastructure\Core\CommandBus\InstantCommandBus;
 use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Serializable\SerializableTrait;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Test\Unit\Infrastructure\Core\AdvancedTestCase;
 
 /**
  * Test of class Davamigo\Infrastructure\Core\CommandBus\InstantCommandBus
  *
- * @package Test\Unit\Infrastructure\Core
+ * @package Test\Unit\Infrastructure\Core\CommandBus
  * @author davamigo@gmail.com
  *
  * @group Test_Unit_Infrastructure_Core_CommandBus_Instant
@@ -27,7 +27,7 @@ use Psr\Log\NullLogger;
  * @group Test
  * @test
  */
-class InstantCommandBusTest extends TestCase
+class InstantCommandBusTest extends AdvancedTestCase
 {
     /**
      * Test empty constructor
@@ -393,20 +393,5 @@ class InstantCommandBusTest extends TestCase
         $commandBus = new InstantCommandBus([ 'commandHandler' => $commandHandler], $logger);
         $commandBus->addCommand($command);
         $commandBus->dispatch();
-    }
-
-    /**
-     * Get the value of a private property of an object using reflection
-     *
-     * @param object $object
-     * @param string $property
-     * @return mixed
-     */
-    private function getPrivateProperty($object, string $property)
-    {
-        $reflectionClass = new \ReflectionClass($object);
-        $reflectionProperty = $reflectionClass->getProperty($property);
-        $reflectionProperty->setAccessible(true);
-        return $reflectionProperty->getValue($object);
     }
 }

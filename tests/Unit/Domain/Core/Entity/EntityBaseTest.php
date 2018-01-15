@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Unit\Domain\Core;
+namespace Test\Unit\Domain\Core\Entity;
 
 use Davamigo\Domain\Core\Entity\EntityBase;
 use Davamigo\Domain\Core\Entity\EntityException;
@@ -11,10 +11,11 @@ use PHPUnit\Framework\TestCase;
 /**
  * Test of class Davamigo\Domain\Core\Entity\EntityBase
  *
- * @package Test\Unit\Domain\Core
+ * @package Test\Unit\Domain\Core\Entity
  * @author davamigo@gmail.com
  *
- * @group Test_Unit_Domain_Core_EntityBase
+ * @group Test_Unit_Domain_Core_Entity_Base
+ * @group Test_Unit_Domain_Core_Entity
  * @group Test_Unit_Domain_Core
  * @group Test_Unit_Domain
  * @group Test_Unit

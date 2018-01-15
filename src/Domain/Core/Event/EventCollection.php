@@ -24,7 +24,9 @@ class EventCollection implements \Iterator
         $this->events = [];
         foreach ($events as $name => $event) {
             if (!$event instanceof Event) {
-                throw new EventException('The items must be an instance of ' . Event::class);
+                throw new EventException(
+                    'EventCollection: The items must be an instance of ' . Event::class
+                );
             }
             if (is_numeric($name)) {
                 $name = get_class($event);
@@ -57,12 +59,12 @@ class EventCollection implements \Iterator
     /**
      * Move forward to next element
      * @link http://php.net/manual/en/iterator.next.php
-     * @return void Any returned value is ignored.
+     * @return mixed Can return any type.
      * @since 5.0.0
      */
     public function next()
     {
-        next($this->events);
+        return next($this->events);
     }
 
     /**
@@ -91,11 +93,11 @@ class EventCollection implements \Iterator
     /**
      * Rewind the Iterator to the first element
      * @link http://php.net/manual/en/iterator.rewind.php
-     * @return void Any returned value is ignored.
+     * @return mixed Can return any type.
      * @since 5.0.0
      */
     public function rewind()
     {
-        reset($this->events);
+        return reset($this->events);
     }
 }

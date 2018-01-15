@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Unit\Domain\Core;
+namespace Test\Unit\Domain\Core\Event;
 
 use Davamigo\Domain\Core\Entity\EntityBase;
 use Davamigo\Domain\Core\Event\EventBase;
@@ -13,10 +13,11 @@ use PHPUnit\Framework\TestCase;
 /**
  * Test of class Davamigo\Domain\Core\Event\EventBase
  *
- * @package Test\Unit\Domain\Core
+ * @package Test\Unit\Domain\Core\Event
  * @author davamigo@gmail.com
  *
- * @group Test_Unit_Domain_Core_EventBase
+ * @group Test_Unit_Domain_Core_Event_Base
+ * @group Test_Unit_Domain_Core_Event
  * @group Test_Unit_Domain_Core
  * @group Test_Unit_Domain
  * @group Test_Unit

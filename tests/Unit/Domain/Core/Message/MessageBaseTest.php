@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Unit\Domain\Core;
+namespace Test\Unit\Domain\Core\Message;
 
 use Davamigo\Domain\Core\Message\MessageBase;
 use Davamigo\Domain\Core\Message\MessageException;

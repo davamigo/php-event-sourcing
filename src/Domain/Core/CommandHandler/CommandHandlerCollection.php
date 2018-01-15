@@ -24,7 +24,9 @@ class CommandHandlerCollection implements \Iterator
         $this->handlers = [];
         foreach ($handlers as $name => $handler) {
             if (!$handler instanceof CommandHandler) {
-                throw new CommandHandlerException('The items must be an instance of ' . CommandHandler::class);
+                throw new CommandHandlerException(
+                    'CommandHandlerCollection: The items must be an instance of ' . CommandHandler::class
+                );
             }
             if (is_numeric($name)) {
                 $name = get_class($handler);
@@ -57,12 +59,12 @@ class CommandHandlerCollection implements \Iterator
     /**
      * Move forward to next element
      * @link http://php.net/manual/en/iterator.next.php
-     * @return void Any returned value is ignored.
+     * @return mixed Can return any type.
      * @since 5.0.0
      */
     public function next()
     {
-        next($this->handlers);
+        return next($this->handlers);
     }
 
     /**
@@ -91,11 +93,11 @@ class CommandHandlerCollection implements \Iterator
     /**
      * Rewind the Iterator to the first element
      * @link http://php.net/manual/en/iterator.rewind.php
-     * @return void Any returned value is ignored.
+     * @return mixed Can return any type.
      * @since 5.0.0
      */
     public function rewind()
     {
-        reset($this->handlers);
+        return reset($this->handlers);
     }
 }

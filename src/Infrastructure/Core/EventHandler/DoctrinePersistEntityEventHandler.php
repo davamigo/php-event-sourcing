@@ -94,13 +94,13 @@ class DoctrinePersistEntityEventHandler implements EventHandler
             switch ($event->action()) {
                 case Event::ACTION_INSERT:
                     $ormEntity = new $ormFullEntityName();
-                    $ormEntity->fromDomainEntity($entity);
+                    call_user_func([$ormEntity, 'fromDomainEntity'], $entity);
                     $this->manager->persist($ormEntity);
                     break;
 
                 case Event::ACTION_UPDATE:
                     $ormEntity = $this->manager->getRepository($ormFullEntityName)->find($entity->uuid()->toString());
-                    $ormEntity->fromDomainEntity($entity);
+                    call_user_func([$ormEntity, 'fromDomainEntity'], $entity);
                     $this->manager->persist($ormEntity);
                     break;
 

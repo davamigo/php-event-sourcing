@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Unit\Domain\Core;
+namespace Test\Unit\Domain\Core\Command;
 
 use Davamigo\Domain\Core\Entity\EntityBase;
 use Davamigo\Domain\Core\Command\CommandBase;
@@ -13,10 +13,11 @@ use PHPUnit\Framework\TestCase;
 /**
  * Test of class Davamigo\Domain\Core\Command\CommandBase
  *
- * @package Test\Unit\Domain\Core
+ * @package Test\Unit\Domain\Core\Command
  * @author davamigo@gmail.com
  *
- * @group Test_Unit_Domain_Core_CommandBase
+ * @group Test_Unit_Domain_Core_Command_Base
+ * @group Test_Unit_Domain_Core_Command
  * @group Test_Unit_Domain_Core
  * @group Test_Unit_Domain
  * @group Test_Unit

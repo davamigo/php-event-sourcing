@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Unit\Infrastructure\Core\Amqp;
+namespace Test\Unit\Infrastructure\Core\EventBus;
 
 use Davamigo\Domain\Core\Event\EventBase;
 use Davamigo\Domain\Core\EventBus\EventBusException;
@@ -13,11 +13,12 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPIOException;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\NullLogger;
+use Test\Unit\Infrastructure\Core\AmqpTestCase;
 
 /**
  * Test of class AmqpEventBus
  *
- * @package Test\Unit\Infrastructure\Core\Amqp
+ * @package Test\Unit\Infrastructure\Core\EventBus
  * @author davamigo@gmail.com
  *
  * @group Test_Unit_Infrastructure_Core_EventBus_Amqp

@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Unit\Infrastructure\Core\Amqp;
+namespace Test\Unit\Infrastructure\Core\EventConsumer;
 
 use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\Event\EventBase;
@@ -15,11 +15,12 @@ use PhpAmqpLib\Exception\AMQPRuntimeException;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\NullLogger;
+use Test\Unit\Infrastructure\Core\AmqpTestCase;
 
 /**
  * Test of class AmqpEventConsumer
  *
- * @package Test\Unit\Infrastructure\Core\Amqp
+ * @package Test\Unit\Infrastructure\Core\EventConsumer
  * @author davamigo@gmail.com
  *
  * @group Test_Unit_Infrastructure_Core_EventConsumer_Amqp
