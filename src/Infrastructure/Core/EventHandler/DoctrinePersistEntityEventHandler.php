@@ -1,22 +1,23 @@
 <?php
 
-namespace Davamigo\Infrastructure\Core\EventStorage;
+namespace Davamigo\Infrastructure\Core\EventHandler;
 
 use Davamigo\Domain\Core\Entity\Entity;
 use Davamigo\Domain\Core\Event\Event;
-use Davamigo\Domain\Core\EventStorage\EventStorage;
-use Davamigo\Domain\Core\EventStorage\EventStorageException;
+use Davamigo\Domain\Core\EventHandler\EventHandler;
+use Davamigo\Domain\Core\EventHandler\EventHandlerException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
- * Event storage implementation using Doctrine
+ * Event handler implementation ro persist the event in a relational database using Doctrine
  *
- * @package Davamigo\Infrastructure\Core\EventStorage
+ * @package Davamigo\Infrastructure\Core\EventHandler
+ * @author davamigo@gmail.com
  */
-class DoctrineEventStorage implements EventStorage
+class DoctrinePersistEntityEventHandler implements EventHandler
 {
     /**
      * The EntityManager is the central access point to Doctrine ORM functionality
@@ -33,7 +34,7 @@ class DoctrineEventStorage implements EventStorage
     protected $logger = null;
 
     /**
-     * MongoDBEventStorer constructor.
+     * DoctrinePersistEntityEventHandler constructor.
      *
      * @param EntityManagerInterface $manager The entity manager from Doctrine
      * @param LoggerInterface        $logger  Monolog object
@@ -47,18 +48,35 @@ class DoctrineEventStorage implements EventStorage
     }
 
     /**
-     * Stores the event in the event storage
+     * The __invoke method is called when a script tries to call an object as a function.
      *
      * @param Event $event
-     * @return EventStorage
-     * @throws EventStorageException
+     * @return EventHandler
+     * @throws EventHandlerException
+     * @link http://php.net/manual/en/language.oop5.magic.php#language.oop5.magic.invoke
      */
-    public function storeEvent(Event $event): EventStorage
+    public function __invoke(Event $event)
     {
+        return $this->handleEvent($event);
+    }
+
+    /**
+     * Processes the event to persist the payload using Doctrine
+     *
+     * @param Event $event
+     * @return EventHandler
+     * @throws EventHandlerException
+     */
+    public function handleEvent(Event $event): EventHandler
+    {
+        $this->logger->info('DoctrinePersistEntityEventHandler: Event received.', [ 'event' => $event ]);
+
         // Extract the payload from the event
         $payload = $event->payload();
         if (!$payload instanceof Entity) {
-            throw new EventStorageException('The payload of the event has to be an Entity!');
+            throw new EventHandlerException(
+                'DoctrinePersistEntityEventHandler error: The payload of the event has to be an Entity!'
+            );
         }
 
         /** @var Entity $entity */
@@ -92,20 +110,20 @@ class DoctrineEventStorage implements EventStorage
                     break;
 
                 default:
-                    throw new EventStorageException('Action ' . $event->action() . ' nor supported!');
+                    throw new EventHandlerException('Action ' . $event->action() . ' nor supported!');
             }
 
             $this->manager->flush();
         } catch (ORMException $exc) {
-            $error = 'An error occurred in Doctrine while processing an event';
+            $error = 'DoctrinePersistEntityEventHandler - An error occurred in Doctrine while processing an event';
             $this->logger->error($error . ' - ' . $exc->getMessage());
             $this->logger->debug($exc);
-            throw new EventStorageException($error, 0, $exc);
+            throw new EventHandlerException($error, 0, $exc);
         } catch (ORMInvalidArgumentException $exc) {
-            $error = 'An error occurred in Doctrine while processing an event';
+            $error = 'DoctrinePersistEntityEventHandler - An error occurred in Doctrine while processing an event';
             $this->logger->error($error . ' - ' . $exc->getMessage());
             $this->logger->debug($exc);
-            throw new EventStorageException($error, 0, $exc);
+            throw new EventHandlerException($error, 0, $exc);
         }
 
         return $this;
@@ -116,17 +134,17 @@ class DoctrineEventStorage implements EventStorage
      *
      * @param string $entityName
      * @return string
-     * @throws EventStorageException
+     * @throws EventHandlerException
      */
     protected function findOrmEntityName(string $entityName) : string
     {
         try {
             $ormEntities = $this->manager->getConfiguration()->getMetadataDriverImpl()->getAllClassNames();
         } catch (ORMException $exc) {
-            $error = 'Error retrieving the Doctrine ORM entities';
+            $error = 'DoctrinePersistEntityEventHandler - Error retrieving the Doctrine ORM entities';
             $this->logger->error($error . ' - ' . $exc->getMessage());
             $this->logger->debug($exc);
-            throw new EventStorageException($error, 0, $exc);
+            throw new EventHandlerException($error, 0, $exc);
         }
 
         foreach ($ormEntities as $ormFullEntityName) {
@@ -140,9 +158,9 @@ class DoctrineEventStorage implements EventStorage
             }
         }
 
-        $error = 'Entity ' . $entityName . ' not found as Doctrine entity';
+        $error = 'DoctrinePersistEntityEventHandler error - Entity ' . $entityName . ' not found as Doctrine entity';
         $this->logger->error($error);
 
-        throw new EventStorageException($error);
+        throw new EventHandlerException($error);
     }
 }

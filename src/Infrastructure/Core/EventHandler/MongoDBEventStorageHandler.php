@@ -1,13 +1,13 @@
 <?php
 
-namespace Davamigo\Infrastructure\Core\EventStorage;
+namespace Davamigo\Infrastructure\Core\EventHandler;
 
 use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\Event\EventBase;
 use Davamigo\Domain\Core\Serializable\SerializableException;
 use Davamigo\Domain\Core\Serializable\SerializableTrait;
-use Davamigo\Domain\Core\EventStorage\EventStorage;
-use Davamigo\Domain\Core\EventStorage\EventStorageException;
+use Davamigo\Domain\Core\EventHandler\EventHandler;
+use Davamigo\Domain\Core\EventHandler\EventHandlerException;
 use Davamigo\Domain\Helpers\AutoSerializeHelper;
 use Davamigo\Infrastructure\Core\Helpers\MongoDBConfigurator;
 use MongoDB\Client as MongoDBClient;
@@ -15,11 +15,12 @@ use MongoDB\Exception\Exception as MongoDBException;
 use Psr\Log\LoggerInterface;
 
 /**
- * Event storage implementation using mongoDB: The warehouse of the events
+ * Event handler implementation to store events using mongoDB
  *
- * @package Davamigo\Infrastructure\Core\EventStorage
+ * @package Davamigo\Infrastructure\Core\EventHandler
+ * @author davamigo@gmail.com
  */
-class MongoDBEventStorage implements EventStorage
+class MongoDBEventStorageHandler implements EventHandler
 {
     /**
      * @var MongoDBClient
@@ -39,7 +40,7 @@ class MongoDBEventStorage implements EventStorage
     protected $logger = null;
 
     /**
-     * MongoDBEventStorer constructor.
+     * MongoDBEventStorageHandler constructor.
      *
      * @param MongoDBClient       $client The mongoDB client
      * @param MongoDBConfigurator $config Configuration object
@@ -56,14 +57,29 @@ class MongoDBEventStorage implements EventStorage
     }
 
     /**
+     * The __invoke method is called when a script tries to call an object as a function.
+     *
+     * @param Event $event
+     * @return EventHandler
+     * @throws EventHandlerException
+     * @link http://php.net/manual/en/language.oop5.magic.php#language.oop5.magic.invoke
+     */
+    public function __invoke(Event $event)
+    {
+        return $this->handleEvent($event);
+    }
+
+    /**
      * Stores the event in the event storage
      *
      * @param Event $event
-     * @return EventStorage
-     * @throws EventStorageException
+     * @return EventHandler
+     * @throws EventHandlerException
      */
-    public function storeEvent(Event $event): EventStorage
+    public function handleEvent(Event $event): EventHandler
     {
+        $this->logger->info('MongoDBEventStorageHandler: Event received.', [ 'event' => $event ]);
+
         $data = $this->serializeEvent($event);
         $data['_id'] = $event->uuid()->toString();
 
@@ -72,10 +88,10 @@ class MongoDBEventStorage implements EventStorage
             $collection = $database->selectCollection($this->config->getDefaultCollection());
             $collection->insertOne($data);
         } catch (MongoDBException $exc) {
-            $this->logger->error('MongoDB event storage exception: ' . $exc->getMessage());
+            $this->logger->error('MongoDBEventStorageHandler exception: ' . $exc->getMessage());
             $this->logger->debug($exc);
 
-            throw new EventStorageException('MongoDB event storage: error storing an event!', 0, $exc);
+            throw new EventHandlerException('MongoDBEventStorageHandler: error storing an event!', 0, $exc);
         }
 
         return $this;
@@ -86,7 +102,7 @@ class MongoDBEventStorage implements EventStorage
      *
      * @param Event $event
      * @return array
-     * @throws EventStorageException
+     * @throws EventHandlerException
      */
     protected function serializeEvent(Event $event) : array
     {
@@ -105,10 +121,10 @@ class MongoDBEventStorage implements EventStorage
         try {
             $data = $event->serialize();
         } catch (SerializableException $exc) {
-            $this->logger->error('MongoDB event storage: error serializing the event - ' . $exc->getMessage());
+            $this->logger->error('MongoDBEventStorageHandler: error serializing the event - ' . $exc->getMessage());
             $this->logger->debug($exc);
 
-            throw new EventStorageException('MongoDB event storage: error serializing the event!', 0, $exc);
+            throw new EventHandlerException('MongoDBEventStorageHandler: error serializing the event!', 0, $exc);
         }
 
         return $data;
