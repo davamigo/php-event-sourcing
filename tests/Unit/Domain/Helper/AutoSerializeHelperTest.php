@@ -6,8 +6,8 @@ use Davamigo\Domain\Core\Entity\EntityBase;
 use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Serializable\SerializableTrait;
 use Davamigo\Domain\Core\Uuid\UuidObj;
-use Davamigo\Domain\Helpers\AutoSerializeException;
-use Davamigo\Domain\Helpers\AutoSerializeHelper;
+use Davamigo\Domain\Helper\AutoSerializeException;
+use Davamigo\Domain\Helper\AutoSerializeHelper;
 use PHPUnit\Framework\TestCase;
 
 /**

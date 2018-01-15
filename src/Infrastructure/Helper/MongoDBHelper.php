@@ -1,44 +1,25 @@
 <?php
 
-namespace Davamigo\Infrastructure\Core\Helpers;
+namespace Davamigo\Infrastructure\Helper;
 
 use MongoDB\Driver\Cursor;
 use MongoDB\Model\BSONDocument;
 
 /**
- * Configuration class for MongoDB
+ * Helper class for MongoDB
  *
- * @package Davamigo\Infrastructure\Core\Helpers
+ * @package Davamigo\Infrastructure\Helper
+ * @author davamigo@gmail.com
  */
-class MongoDBConfigurator
+class MongoDBHelper
 {
-    /**
-     * Returns the default database name
-     *
-     * @return string
-     */
-    public function getDefaultDatabase() : string
-    {
-        return 'events';
-    }
-
-    /**
-     * Returns the default collection name
-     *
-     * @return string
-     */
-    public function getDefaultCollection() : string
-    {
-        return 'storage';
-    }
-
     /**
      * Convert MongoDB cursor to an array
      *
      * @param Cursor $cursor
      * @return array
      */
-    public static function cursorToArray(Cursor $cursor) : array
+    final public static function cursorToArray(Cursor $cursor) : array
     {
         $result = [];
         $data = $cursor->toArray();
@@ -58,7 +39,7 @@ class MongoDBConfigurator
      * @param BSONDocument $document
      * @return array
      */
-    public static function bsonDocumentToArray(BSONDocument $document) : array
+    final public static function bsonDocumentToArray(BSONDocument $document) : array
     {
         $result = [];
         $data = $document->getArrayCopy();

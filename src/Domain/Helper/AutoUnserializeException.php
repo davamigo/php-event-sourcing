@@ -1,13 +1,13 @@
 <?php
 
-namespace Davamigo\Domain\Helpers;
+namespace Davamigo\Domain\Helper;
 
 use Davamigo\Domain\Core\CoreException;
 
 /**
  * Exception for AutoUnserializeHelper class
  *
- * @package Davamigo\Domain\Helpers
+ * @package Davamigo\Domain\Helper
  * @author davamigo@gmail.com
  */
 class AutoUnserializeException extends CoreException

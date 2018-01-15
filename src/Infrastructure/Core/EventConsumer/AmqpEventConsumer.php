@@ -7,7 +7,8 @@ use Davamigo\Domain\Core\Event\EventBase;
 use Davamigo\Domain\Core\Event\EventCollection;
 use Davamigo\Domain\Core\EventConsumer\EventConsumer;
 use Davamigo\Domain\Core\EventConsumer\EventConsumerException;
-use Davamigo\Infrastructure\Core\Helpers\AmqpConfigurator;
+use Davamigo\Infrastructure\Config\AmqpConfigurator;
+use Davamigo\Infrastructure\Helper\AmqpHelper;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPExceptionInterface;
@@ -293,7 +294,7 @@ class AmqpEventConsumer implements EventConsumer
     {
         $exchange = $this->config->getDefaultExchange();
         $queues = $this->config->getDefaultQueues();
-        $this->config->bindExchangeAndQueue($channel, $exchange, $queues);
+        AmqpHelper::bindExchangeAndQueue($channel, $exchange, $queues);
         return $this;
     }
 

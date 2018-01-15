@@ -1,6 +1,6 @@
 <?php
 
-namespace Davamigo\Domain\Helpers;
+namespace Davamigo\Domain\Helper;
 
 use Davamigo\Domain\Core\Serializable\Serializable;
 use Davamigo\Domain\Core\Uuid\Uuid;
@@ -8,7 +8,7 @@ use Davamigo\Domain\Core\Uuid\Uuid;
 /**
  * Helper class to auto serialize an entity using reflexion
  *
- * @package Davamigo\Domain\Helpers
+ * @package Davamigo\Domain\Helper
  * @author davamigo@gmail.com
  */
 class AutoSerializeHelper

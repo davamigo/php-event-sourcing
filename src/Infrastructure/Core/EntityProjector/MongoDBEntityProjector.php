@@ -10,7 +10,8 @@ use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\Event\EventBase;
 use Davamigo\Domain\Core\Event\EventCollection;
 use Davamigo\Domain\Core\Uuid\Uuid;
-use Davamigo\Infrastructure\Core\Helpers\MongoDBConfigurator;
+use Davamigo\Infrastructure\Config\MongoDBConfigurator;
+use Davamigo\Infrastructure\Helper\MongoDBHelper;
 use MongoDB\Client as MongoDBClient;
 use MongoDB\Exception\Exception as MongoDBException;
 use Psr\Log\LoggerInterface;
@@ -97,7 +98,7 @@ class MongoDBEntityProjector implements EntityProjector
             throw new EntityProjectorErrorException('EntityProjector: MongoDB error executing the query!', 0, $exc);
         }
 
-        $resultList = MongoDBConfigurator::cursorToArray($cursor);
+        $resultList = MongoDBHelper::cursorToArray($cursor);
         if (empty($resultList)) {
             $this->logger->warning('EntityProjector error: No entity found!');
             throw new EntityProjectorNotFoundException('EntityProjector error: No entity found!');

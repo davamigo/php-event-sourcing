@@ -2,10 +2,10 @@
 
 namespace Davamigo\Domain\Core\Serializable;
 
-use Davamigo\Domain\Helpers\AutoSerializeException;
-use Davamigo\Domain\Helpers\AutoSerializeHelper;
-use Davamigo\Domain\Helpers\AutoUnserializeException;
-use Davamigo\Domain\Helpers\AutoUnserializeHelper;
+use Davamigo\Domain\Helper\AutoSerializeException;
+use Davamigo\Domain\Helper\AutoSerializeHelper;
+use Davamigo\Domain\Helper\AutoUnserializeException;
+use Davamigo\Domain\Helper\AutoUnserializeHelper;
 
 /**
  * Trait SerializableTrait

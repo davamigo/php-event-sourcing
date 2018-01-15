@@ -6,7 +6,8 @@ use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\Event\EventBase;
 use Davamigo\Domain\Core\EventBus\EventBus;
 use Davamigo\Domain\Core\EventBus\EventBusException;
-use Davamigo\Infrastructure\Core\Helpers\AmqpConfigurator;
+use Davamigo\Infrastructure\Config\AmqpConfigurator;
+use Davamigo\Infrastructure\Helper\AmqpHelper;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPExceptionInterface;
@@ -127,7 +128,7 @@ class AmqpEventBus implements EventBus
     {
         $exchange = $this->config->getDefaultExchange();
         $queues = $this->config->getDefaultQueues();
-        $this->config->bindExchangeAndQueue($channel, $exchange, $queues);
+        AmqpHelper::bindExchangeAndQueue($channel, $exchange, $queues);
         return $this;
     }
 
