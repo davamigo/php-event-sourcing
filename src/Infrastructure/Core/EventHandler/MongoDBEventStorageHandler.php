@@ -78,7 +78,7 @@ class MongoDBEventStorageHandler implements EventHandler
      */
     public function handleEvent(Event $event): EventHandler
     {
-        $this->logger->info('MongoDBEventStorageHandler: Event received.', [ 'event' => $event ]);
+        $this->logger->info('MongoDBEventStorageHandler: Handling event.', [ 'event' => $event ]);
 
         $data = $this->serializeEvent($event);
         $data['_id'] = $event->uuid()->toString();
@@ -98,7 +98,7 @@ class MongoDBEventStorageHandler implements EventHandler
     }
 
     /**
-     * Serializes an event.
+     * Serializes an event removing non-serializable data.
      *
      * @param Event $event
      * @return array

@@ -69,7 +69,7 @@ class DoctrinePersistEntityEventHandler implements EventHandler
      */
     public function handleEvent(Event $event): EventHandler
     {
-        $this->logger->info('DoctrinePersistEntityEventHandler: Event received.', [ 'event' => $event ]);
+        $this->logger->info('DoctrinePersistEntityEventHandler: Handling event.', [ 'event' => $event ]);
 
         // Extract the payload from the event
         $payload = $event->payload();
@@ -82,31 +82,18 @@ class DoctrinePersistEntityEventHandler implements EventHandler
         /** @var Entity $entity */
         $entity = $payload;
 
-        // Get the entity name
-        $fullEntityName = get_class($entity);
-        $entityNameComponents = explode('\\', $fullEntityName);
-        $entityName = end($entityNameComponents);
-
-        // Get the Doctrine entity name
-        $ormFullEntityName = $this->findOrmEntityName($entityName);
-
         try {
             switch ($event->action()) {
                 case Event::ACTION_INSERT:
-                    $ormEntity = new $ormFullEntityName();
-                    call_user_func([$ormEntity, 'fromDomainEntity'], $entity);
-                    $this->manager->persist($ormEntity);
+                    $this->insert($entity);
                     break;
 
                 case Event::ACTION_UPDATE:
-                    $ormEntity = $this->manager->getRepository($ormFullEntityName)->find($entity->uuid()->toString());
-                    call_user_func([$ormEntity, 'fromDomainEntity'], $entity);
-                    $this->manager->persist($ormEntity);
+                    $this->update($entity);
                     break;
 
                 case Event::ACTION_DELETE:
-                    $ormEntity = $this->manager->getRepository($ormFullEntityName)->find($entity->uuid()->toString());
-                    $this->manager->remove($ormEntity);
+                    $this->delete($entity);
                     break;
 
                 default:
@@ -130,14 +117,78 @@ class DoctrinePersistEntityEventHandler implements EventHandler
     }
 
     /**
+     * Inserts the entity
+     *
+     * @param Entity $entity
+     * @return void
+     * @throws EventHandlerException
+     */
+    protected function insert(Entity $entity) : void
+    {
+        // Get the Doctrine entity class
+        $ormEntityClass = $this->findOrmEntityClass($entity);
+
+        // Create the new entity
+        $ormEntity = new $ormEntityClass();
+
+        // Persist the entity
+        $this->fillOrmEntityFromDomainEntity($ormEntity, $entity);
+        $this->manager->persist($ormEntity);
+    }
+
+    /**
+     * Updates the entity
+     *
+     * @param Entity $entity
+     * @return void
+     * @throws EventHandlerException
+     */
+    protected function update(Entity $entity) : void
+    {
+        // Get the Doctrine entity class
+        $ormEntityClass = $this->findOrmEntityClass($entity);
+
+        // Find the entity
+        $ormEntity = $this->manager->getRepository($ormEntityClass)->find($entity->uuid()->toString());
+
+        // Persist the entity
+        $this->fillOrmEntityFromDomainEntity($ormEntity, $entity);
+        $this->manager->persist($ormEntity);
+    }
+
+    /**
+     * Deletes the entity
+     *
+     * @param Entity $entity
+     * @return void
+     * @throws EventHandlerException
+     */
+    protected function delete(Entity $entity) : void
+    {
+        // Get the Doctrine entity class
+        $ormEntityClass = $this->findOrmEntityClass($entity);
+
+        // Find the entity
+        $ormEntity = $this->manager->getRepository($ormEntityClass)->find($entity->uuid()->toString());
+
+        // Remove the entity
+        $this->manager->remove($ormEntity);
+    }
+
+    /**
      * Find the equivalent entity inside the Doctrine entity manager
      *
-     * @param string $entityName
+     * @param Entity $entity
      * @return string
      * @throws EventHandlerException
      */
-    protected function findOrmEntityName(string $entityName) : string
+    protected function findOrmEntityClass(Entity $entity) : string
     {
+        // Get the entity name
+        $fullEntityName = get_class($entity);
+        $entityNameComponents = explode('\\', $fullEntityName);
+        $entityName = end($entityNameComponents);
+
         try {
             $ormEntities = $this->manager->getConfiguration()->getMetadataDriverImpl()->getAllClassNames();
         } catch (ORMException $exc) {
@@ -147,13 +198,13 @@ class DoctrinePersistEntityEventHandler implements EventHandler
             throw new EventHandlerException($error, 0, $exc);
         }
 
-        foreach ($ormEntities as $ormFullEntityName) {
-            $ormEntityMethods = get_class_methods($ormFullEntityName);
+        foreach ($ormEntities as $ormEntityClass) {
+            $ormEntityMethods = get_class_methods($ormEntityClass);
             if (in_array('fromDomainEntity', $ormEntityMethods)) {
-                $entityNameComponents = explode('\\', $ormFullEntityName);
+                $entityNameComponents = explode('\\', $ormEntityClass);
                 $ormEntityName = end($entityNameComponents);
                 if ($entityName == $ormEntityName) {
-                    return $ormFullEntityName;
+                    return $ormEntityClass;
                 }
             }
         }
@@ -162,5 +213,17 @@ class DoctrinePersistEntityEventHandler implements EventHandler
         $this->logger->error($error);
 
         throw new EventHandlerException($error);
+    }
+
+    /**
+     * Replaces the content of the ORM entity with the domain entity one.
+     *
+     * @param object $ormEntity
+     * @param Entity $domainEnjtity
+     * @return void
+     */
+    protected function fillOrmEntityFromDomainEntity($ormEntity, Entity $domainEnjtity) : void
+    {
+        call_user_func([$ormEntity, 'fromDomainEntity'], $domainEnjtity);
     }
 }
