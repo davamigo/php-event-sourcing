@@ -219,11 +219,28 @@ class DoctrinePersistEntityEventHandler implements EventHandler
      * Replaces the content of the ORM entity with the domain entity one.
      *
      * @param object $ormEntity
-     * @param Entity $domainEnjtity
+     * @param Entity $domainEntity
      * @return void
      */
-    protected function fillOrmEntityFromDomainEntity($ormEntity, Entity $domainEnjtity) : void
+    protected function fillOrmEntityFromDomainEntity($ormEntity, Entity $domainEntity) : void
     {
-        call_user_func([$ormEntity, 'fromDomainEntity'], $domainEnjtity);
+        call_user_func([$ormEntity, 'fromDomainEntity'], $domainEntity);
+
+        $rawData = $domainEntity->serialize();
+        foreach (array_keys($rawData) as $rawField) {
+            $getFieldMethod = 'get' . $rawField;
+            $setFieldMethod = 'set' . $rawField;
+            if (method_exists($ormEntity, $getFieldMethod)
+                && method_exists($ormEntity, $setFieldMethod)) {
+                $ormSubentity = call_user_func([$ormEntity, $getFieldMethod]);
+                if (null !== $ormSubentity && method_exists($ormSubentity, 'getUuid')) {
+                    $repo = $this->manager->getRepository(get_class($ormSubentity));
+                    if (null !== $repo) {
+                        $ormSubentity = $repo->find(call_user_func([$ormSubentity, 'getUuid']));
+                        call_user_func([$ormEntity, $setFieldMethod], $ormSubentity);
+                    }
+                }
+            }
+        }
     }
 }
