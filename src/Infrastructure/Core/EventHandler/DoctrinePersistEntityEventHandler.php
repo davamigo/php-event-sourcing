@@ -6,9 +6,9 @@ use Davamigo\Domain\Core\Entity\Entity;
 use Davamigo\Domain\Core\Event\Event;
 use Davamigo\Domain\Core\EventHandler\EventHandler;
 use Davamigo\Domain\Core\EventHandler\EventHandlerException;
+use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\ORMInvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -97,22 +97,26 @@ class DoctrinePersistEntityEventHandler implements EventHandler
                     break;
 
                 default:
-                    throw new EventHandlerException('Action ' . $event->action() . ' nor supported!');
+                    $this->logger->error('Action ' . $event->action() . ' nor supported!');
+                    //throw new EventHandlerException('Action ' . $event->action() . ' nor supported!');
             }
 
-            $this->manager->flush();
+        } catch (DBALException $exc) {
+            $error = 'DoctrinePersistEntityEventHandler - An error occurred in Doctrine DBAL while processing an event';
+            $this->logger->error($error . ' - ' . $exc->getMessage());
+            $this->logger->debug($exc);
+            //throw new EventHandlerException($error, 0, $exc);
         } catch (ORMException $exc) {
-            $error = 'DoctrinePersistEntityEventHandler - An error occurred in Doctrine while processing an event';
+            $error = 'DoctrinePersistEntityEventHandler - An error occurred in Doctrine ORM while processing an event';
             $this->logger->error($error . ' - ' . $exc->getMessage());
             $this->logger->debug($exc);
-            throw new EventHandlerException($error, 0, $exc);
-        } catch (ORMInvalidArgumentException $exc) {
-            $error = 'DoctrinePersistEntityEventHandler - An error occurred in Doctrine while processing an event';
+            //throw new EventHandlerException($error, 0, $exc);
+        } catch (\Exception $exc) {
+            $error = 'DoctrinePersistEntityEventHandler - An untracked error occurred while processing an event';
             $this->logger->error($error . ' - ' . $exc->getMessage());
             $this->logger->debug($exc);
-            throw new EventHandlerException($error, 0, $exc);
+            //throw new EventHandlerException($error, 0, $exc);
         }
-
         return $this;
     }
 
@@ -134,6 +138,7 @@ class DoctrinePersistEntityEventHandler implements EventHandler
         // Persist the entity
         $this->fillOrmEntityFromDomainEntity($ormEntity, $entity);
         $this->manager->persist($ormEntity);
+        $this->manager->flush();
     }
 
     /**
@@ -154,6 +159,7 @@ class DoctrinePersistEntityEventHandler implements EventHandler
         // Persist the entity
         $this->fillOrmEntityFromDomainEntity($ormEntity, $entity);
         $this->manager->persist($ormEntity);
+        $this->manager->flush();
     }
 
     /**
@@ -173,6 +179,7 @@ class DoctrinePersistEntityEventHandler implements EventHandler
 
         // Remove the entity
         $this->manager->remove($ormEntity);
+        $this->manager->flush();
     }
 
     /**
