@@ -1,7 +1,10 @@
 # Composer project
+bin/
 vendor/
 composer.phar
 
 # IDE
 .idea/
 
+# Coverage
+/runtime/

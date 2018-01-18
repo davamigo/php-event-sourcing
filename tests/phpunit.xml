@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<phpunit
+    bootstrap="./bootstrap.php"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    colors="true">
+
+    <testsuites>
+        <testsuite name="Unit Tests">
+            <directory suffix="Test.php">../tests/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">../src</directory>
+            <directory suffix=".php">../samples</directory>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-html" target="../runtime/coverage" charset="UTF-8" yui="true" />
+        <log type="coverage-text" target="../runtime/coverage/coverage.txt" />
+    </logging>
+
+</phpunit>

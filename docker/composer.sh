@@ -1,5 +1,6 @@
 #!/bin/bash
 
+dockerfile="docker-compose.yml";
 user="david"
 service="php7.1"
 composer="/usr/local/bin/composer"
@@ -14,5 +15,5 @@ do
     shift
 done
 
-docker-compose run --rm -u $user $service $composer $args
+docker-compose -f $dockerfile run --rm -u $user $service $composer $args
 

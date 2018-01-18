@@ -1,5 +1,6 @@
 #!/bin/bash
 
+dockerfile="docker-compose.yml";
 user="root"
 service="php7.1"
 
@@ -15,8 +16,8 @@ done
 
 if [ "$args" == "" ]
 then
-    docker-compose run --rm -u $user $service bash
+    docker-compose -f $dockerfile run --rm -u $user $service bash
 else
-    docker-compose run --rm -u $user $service $args
+    docker-compose -f $dockerfile run --rm -u $user $service $args
 fi
 
